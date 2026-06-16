@@ -1,0 +1,48 @@
+/* Design tokens — premium DARK theme. Midnight slate ground so glass panels and
+   the colorful treemap pop. Light ink on dark surfaces. */
+:root {
+  --bg: #0a0e1a; /* midnight base (gradient applied on body) */
+  --surface: rgba(255, 255, 255, 0.05); /* translucent raised */
+  --surface-solid: #141b2b; /* opaque panels: modal, inputs */
+  --surface-2: #1b2436; /* slightly raised: input fields, chips */
+  --ink: #e9edf4; /* primary text */
+  --muted: #8b95a8; /* secondary text */
+  --line: rgba(255, 255, 255, 0.09); /* hairline borders */
+
+  --accent: #3f9a80; /* brightened pine for dark */
+  --accent-soft: rgba(63, 154, 128, 0.16);
+
+  /* payer colors retained for the data model; no longer surfaced in the UI */
+  --me: #3f9a80;
+  --partner: #c47a55;
+  --joint: #8b95a8;
+
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  /* Glass layer (dark, translucent) */
+  --glass-bg: rgba(255, 255, 255, 0.055);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 1px 1px rgba(255, 255, 255, 0.04) inset,
+    0 18px 50px rgba(0, 0, 0, 0.5);
+
+  --on-dark: #e9edf4;
+  --on-dark-muted: #8b95a8;
+}
+
+/* Categorical palette for categories/charts. */
+:root {
+  --c0: #2f6f5e;
+  --c1: #c2703d;
+  --c2: #d9a441;
+  --c3: #5e9bc2;
+  --c4: #6e7ca8;
+  --c5: #a65a3a;
+  --c6: #c98a5e;
+  --c7: #7a8b5a;
+  --c8: #5b8c7b;
+  --c9: #88b0a0;
+  --c10: #8a6fa8;
+  --c11: #c25e7a;
+}
