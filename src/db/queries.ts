@@ -1,7 +1,7 @@
 // Month-keyed read/write helpers + derived selectors. Components stay
 // presentational and call these; they never touch Dexie directly.
 import { db, SETTINGS_KEY } from './db';
-import type { Category, Expense, MonthKey, Settings } from '../types';
+import type { Category, Expense, Income, MonthKey, Settings } from '../types';
 import { monthKeyOfDateString, moveDateToMonth, shiftMonth } from '../lib/month';
 import { nextPaletteColor } from '../lib/palette';
 
@@ -41,6 +41,29 @@ export const saveExpense = async (input: ExpenseInput): Promise<number> => {
 
 export const deleteExpense = (id: number): Promise<void> =>
   db.expenses.delete(id);
+
+// ---- Income ----------------------------------------------------------------
+
+// Income amount (cents) for a month, or 0 when none has been set.
+export const incomeForMonth = async (month: MonthKey): Promise<number> => {
+  const record = await db.incomes.get(month);
+  return record?.amountCents ?? 0;
+};
+
+export const incomesForMonths = (months: MonthKey[]): Promise<Income[]> =>
+  db.incomes.where('month').anyOf(months).toArray();
+
+// Set (or clear) a month's income. amountCents <= 0 removes the row.
+export const setIncome = async (
+  month: MonthKey,
+  amountCents: number,
+): Promise<void> => {
+  if (amountCents <= 0) {
+    await db.incomes.delete(month);
+    return;
+  }
+  await db.incomes.put({ month, amountCents });
+};
 
 // ---- Settings --------------------------------------------------------------
 
@@ -149,13 +172,14 @@ export const copyFixedBillsFromPreviousMonth = async (
 
 // Serialize all local data to a JSON string (for the Settings "Export data").
 export const exportAllData = async (): Promise<string> => {
-  const [expenses, categories, settings] = await Promise.all([
+  const [expenses, categories, settings, incomes] = await Promise.all([
     db.expenses.toArray(),
     db.categories.toArray(),
     db.settings.get(SETTINGS_KEY),
+    db.incomes.toArray(),
   ]);
   return JSON.stringify(
-    { app: 'ourbudget', version: 1, expenses, categories, settings },
+    { app: 'ourbudget', version: 1, expenses, categories, settings, incomes },
     null,
     2,
   );

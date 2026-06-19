@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie';
 
-import type { Category, Expense, Settings } from '../types';
+import type { Category, Expense, Income, Settings } from '../types';
 import { PALETTE } from '../lib/palette';
 
 // Local-only IndexedDB store. No data ever leaves the device.
@@ -8,6 +8,7 @@ class LedgerDB extends Dexie {
   expenses!: Table<Expense, number>;
   categories!: Table<Category, string>;
   settings!: Table<Settings, string>;
+  incomes!: Table<Income, string>;
 
   constructor() {
     super('ledger');
@@ -44,6 +45,13 @@ class LedgerDB extends Dexie {
             if (typeof s.onboarded !== 'boolean') s.onboarded = true;
           });
       });
+    // v3 — add a per-month income store. Existing tables are untouched.
+    this.version(3).stores({
+      expenses: '++id, month, categoryId, date',
+      categories: 'id',
+      settings: 'key',
+      incomes: 'month',
+    });
   }
 }
 

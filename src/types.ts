@@ -23,6 +23,14 @@ export interface Category {
   kind: CategoryKind;
 }
 
+// One income figure per month (salary varies month to month). Keyed by month
+// so switching months shows that month's income; drives "set aside" = income
+// minus spending.
+export interface Income {
+  month: MonthKey; // primary key
+  amountCents: number;
+}
+
 // Settings is a single row keyed by a fixed string in Dexie (store: 'key').
 export interface Settings {
   key: string; // always 'app'

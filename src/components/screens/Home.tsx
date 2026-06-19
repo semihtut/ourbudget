@@ -1,5 +1,6 @@
 import { CategoryDonut } from '../charts/CategoryDonut';
 import { MonthlyTrend } from '../charts/MonthlyTrend';
+import { IncomeSavings } from '../IncomeSavings';
 import { TransactionRow } from '../TransactionList';
 import { formatEur, formatEurWhole } from '../../lib/money';
 import { monthLabel, monthShortLabel, shiftMonth } from '../../lib/month';
@@ -55,6 +56,9 @@ export function Home({
           {insight(month, total, prevTotalCents, rows.length)}
         </p>
       </section>
+
+      {/* Income & savings */}
+      <IncomeSavings month={month} spentCents={total} />
 
       {/* Where it went */}
       <section className="card p-5">
