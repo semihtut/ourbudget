@@ -1,33 +1,45 @@
 import { monthLabel, shiftMonth } from '../lib/month';
+import { ChevronLeftIcon, ChevronRightIcon } from './icons';
 import type { MonthKey } from '../types';
 
 interface MonthSwitcherProps {
   month: MonthKey;
   onChange: (month: MonthKey) => void;
+  /** compact = smaller, used inside screen headers. */
+  size?: 'default' | 'compact';
 }
 
-// ‹ June 2026 › — moves the global month back and forward. Instant; no reload.
-export function MonthSwitcher({ month, onChange }: MonthSwitcherProps) {
+// ‹ June 2026 › — drives the one global month. Instant; no reload.
+export function MonthSwitcher({ month, onChange, size = 'default' }: MonthSwitcherProps) {
+  const btn =
+    size === 'compact'
+      ? 'h-[30px] w-[30px] text-sm'
+      : 'h-9 w-9 text-base';
+  const labelCls =
+    size === 'compact'
+      ? 'min-w-[5.5rem] text-sm'
+      : 'min-w-[8rem] text-base';
+
   return (
-    <div className="flex items-center justify-center gap-1">
+    <div className="flex items-center justify-center gap-2">
       <button
         type="button"
         aria-label="Previous month"
         onClick={() => onChange(shiftMonth(month, -1))}
-        className="grid h-10 w-10 place-items-center rounded-full text-xl text-muted transition-colors hover:bg-white/10 hover:text-ink active:scale-95"
+        className={`grid ${btn} place-items-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-accent-soft active:scale-95`}
       >
-        ‹
+        <ChevronLeftIcon className="h-4 w-4" />
       </button>
-      <h2 className="min-w-[10.5rem] text-center text-lg font-medium text-ink tnum">
+      <span className={`${labelCls} text-center font-semibold text-ink`}>
         {monthLabel(month)}
-      </h2>
+      </span>
       <button
         type="button"
         aria-label="Next month"
         onClick={() => onChange(shiftMonth(month, 1))}
-        className="grid h-10 w-10 place-items-center rounded-full text-xl text-muted transition-colors hover:bg-white/10 hover:text-ink active:scale-95"
+        className={`grid ${btn} place-items-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-accent-soft active:scale-95`}
       >
-        ›
+        <ChevronRightIcon className="h-4 w-4" />
       </button>
     </div>
   );

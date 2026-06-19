@@ -11,12 +11,39 @@ class LedgerDB extends Dexie {
 
   constructor() {
     super('ledger');
-    // Never mutate a shipped version. Add version(n+1) with an upgrade instead.
+    // v1 — original schema (payer was part of the model + index). Never mutate.
     this.version(1).stores({
       expenses: '++id, month, categoryId, payer, date',
       categories: 'id',
       settings: 'key',
     });
+    // v2 — payer removed from the model. Drop it from the index and strip the
+    // field from existing rows; migrate settings (drop splitRatio, add the
+    // household name + onboarding flag).
+    this.version(2)
+      .stores({
+        expenses: '++id, month, categoryId, date',
+        categories: 'id',
+        settings: 'key',
+      })
+      .upgrade(async (tx) => {
+        await tx
+          .table('expenses')
+          .toCollection()
+          .modify((expense) => {
+            delete (expense as Record<string, unknown>).payer;
+          });
+        await tx
+          .table('settings')
+          .toCollection()
+          .modify((settings) => {
+            const s = settings as Record<string, unknown>;
+            delete s.splitRatio;
+            if (typeof s.householdName !== 'string') s.householdName = '';
+            // Existing users have data already, so treat them as onboarded.
+            if (typeof s.onboarded !== 'boolean') s.onboarded = true;
+          });
+      });
   }
 }
 
@@ -26,14 +53,15 @@ export const SETTINGS_KEY = 'app';
 
 const DEFAULT_SETTINGS: Settings = {
   key: SETTINGS_KEY,
+  householdName: '',
   meName: 'Me',
   partnerName: 'Partner',
-  splitRatio: 0.5,
+  onboarded: false,
 };
 
-// Seeded categories. Order here also drives initial color assignment.
+// Seeded categories (handoff list). Order also drives initial color assignment.
 const SEED_CATEGORIES: Omit<Category, 'color'>[] = [
-  { id: 'rent', label: 'Rent (incl. gas)', emoji: '🏠', kind: 'fixed' },
+  { id: 'rent', label: 'Rent incl. gas', emoji: '🏠', kind: 'fixed' },
   { id: 'home-insurance', label: 'Home Insurance', emoji: '🛡️', kind: 'fixed' },
   { id: 'health-insurance', label: 'Health Insurance', emoji: '🩺', kind: 'fixed' },
   { id: 'electricity', label: 'Electricity', emoji: '⚡', kind: 'fixed' },
@@ -47,8 +75,7 @@ const SEED_CATEGORIES: Omit<Category, 'color'>[] = [
   { id: 'groceries', label: 'Groceries', emoji: '🛒', kind: 'variable' },
 ];
 
-// Idempotent first-run seed: settings row + default categories. Safe to call on
-// every startup — it only writes rows that are missing.
+// Idempotent first-run seed: settings row + default categories.
 export const ensureSeeded = async (): Promise<void> => {
   try {
     await db.transaction('rw', db.settings, db.categories, async () => {
@@ -67,7 +94,6 @@ export const ensureSeeded = async (): Promise<void> => {
       }
     });
   } catch (error) {
-    // Seeding failure is unrecoverable for the app — surface it loudly.
     console.error('Failed to seed the local database', error);
     throw error;
   }

@@ -1,4 +1,4 @@
-// Unified vector icons (stroke-based, currentColor) used across the list/controls.
+// Unified stroke icons (currentColor) used across the app.
 interface IconProps {
   className?: string;
 }
@@ -8,10 +8,48 @@ const base = (className?: string) => ({
   viewBox: '0 0 24 24',
   fill: 'none',
   stroke: 'currentColor',
-  strokeWidth: 1.8,
+  strokeWidth: 1.9,
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
 });
+
+export const HomeIcon = ({ className }: IconProps) => (
+  <svg {...base(className)} aria-hidden>
+    <path d="M3 10.5 12 3l9 7.5" />
+    <path d="M5 9.5V20h14V9.5" />
+  </svg>
+);
+
+export const ActivityIcon = ({ className }: IconProps) => (
+  <svg {...base(className)} aria-hidden>
+    <path d="M8 6h12M8 12h12M8 18h12" />
+    <circle cx="3.5" cy="6" r="0.6" />
+    <circle cx="3.5" cy="12" r="0.6" />
+    <circle cx="3.5" cy="18" r="0.6" />
+  </svg>
+);
+
+export const TrendsIcon = ({ className }: IconProps) => (
+  <svg {...base(className)} aria-hidden>
+    <path d="M4 20V11M10 20V5M16 20v-6M2 20h20" />
+  </svg>
+);
+
+export const SettingsIcon = ({ className }: IconProps) => (
+  <svg {...base(className)} aria-hidden>
+    <path d="M4 8h8M18 8h2" />
+    <circle cx="14" cy="8" r="2.2" />
+    <path d="M4 16h2M12 16h8" />
+    <circle cx="8" cy="16" r="2.2" />
+  </svg>
+);
+
+export const SearchIcon = ({ className }: IconProps) => (
+  <svg {...{ ...base(className), strokeWidth: 2 }} aria-hidden>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m21 21-4-4" />
+  </svg>
+);
 
 export const RecurringIcon = ({ className }: IconProps) => (
   <svg {...base(className)} aria-hidden>
@@ -25,6 +63,18 @@ export const RecurringIcon = ({ className }: IconProps) => (
 export const ChevronIcon = ({ className }: IconProps) => (
   <svg {...base(className)} aria-hidden>
     <path d="m6 9 6 6 6-6" />
+  </svg>
+);
+
+export const ChevronRightIcon = ({ className }: IconProps) => (
+  <svg {...base(className)} aria-hidden>
+    <path d="m9 6 6 6-6 6" />
+  </svg>
+);
+
+export const ChevronLeftIcon = ({ className }: IconProps) => (
+  <svg {...base(className)} aria-hidden>
+    <path d="m15 6-6 6 6 6" />
   </svg>
 );
 
@@ -46,11 +96,5 @@ export const TrashIcon = ({ className }: IconProps) => (
 export const PlusIcon = ({ className }: IconProps) => (
   <svg {...base(className)} aria-hidden>
     <path d="M12 5v14M5 12h14" />
-  </svg>
-);
-
-export const SparkIcon = ({ className }: IconProps) => (
-  <svg {...base(className)} aria-hidden>
-    <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" />
   </svg>
 );

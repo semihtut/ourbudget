@@ -1,47 +1,37 @@
-// Month-keyed read/write helpers. Components stay presentational and call these;
-// they never touch Dexie directly.
+// Month-keyed read/write helpers + derived selectors. Components stay
+// presentational and call these; they never touch Dexie directly.
 import { db, SETTINGS_KEY } from './db';
-import type { Category, Expense, MonthKey, Payer, Settings } from '../types';
+import type { Category, Expense, MonthKey, Settings } from '../types';
 import { monthKeyOfDateString, moveDateToMonth, shiftMonth } from '../lib/month';
 import { nextPaletteColor } from '../lib/palette';
 
 // ---- Reads -----------------------------------------------------------------
 
-// The query the whole app is built around: one indexed month read.
 export const expensesForMonth = (month: MonthKey): Promise<Expense[]> =>
   db.expenses.where('month').equals(month).toArray();
 
-// Expenses across several months in one indexed read (for the trend chart).
 export const expensesForMonths = (months: MonthKey[]): Promise<Expense[]> =>
   db.expenses.where('month').anyOf(months).toArray();
 
-export const allCategories = (): Promise<Category[]> =>
-  db.categories.toArray();
+export const allCategories = (): Promise<Category[]> => db.categories.toArray();
 
 export const getSettings = async (): Promise<Settings | undefined> =>
   db.settings.get(SETTINGS_KEY);
 
 // ---- Expense writes --------------------------------------------------------
 
-export type ExpenseInput = Omit<Expense, 'id' | 'month' | 'payer'> & {
-  id?: number;
-  payer?: Payer;
-};
+export type ExpenseInput = Omit<Expense, 'id' | 'month'> & { id?: number };
 
-// Create or update an expense. `month` is always derived from `date` so the two
-// can never drift apart. Payer is retained in the data model but defaults to
-// 'joint' since the per-person split was removed from the UI.
+// Create or update an expense. `month` is always derived from `date`.
 export const saveExpense = async (input: ExpenseInput): Promise<number> => {
   const record: Expense = {
     date: input.date,
     month: monthKeyOfDateString(input.date),
     categoryId: input.categoryId,
     amountCents: input.amountCents,
-    payer: input.payer ?? 'joint',
     note: input.note?.trim() ? input.note.trim() : undefined,
     recurring: input.recurring,
   };
-
   if (input.id != null) {
     await db.expenses.update(input.id, record);
     return input.id;
@@ -60,9 +50,10 @@ export const updateSettings = async (
   const current = await db.settings.get(SETTINGS_KEY);
   const base: Settings = current ?? {
     key: SETTINGS_KEY,
+    householdName: '',
     meName: 'Me',
     partnerName: 'Partner',
-    splitRatio: 0.5,
+    onboarded: false,
   };
   await db.settings.put({ ...base, ...patch, key: SETTINGS_KEY });
 };
@@ -76,7 +67,6 @@ const slugify = (label: string): string =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'category';
 
-// Add a user-defined category. Generates a unique id and an unused palette color.
 export const addCategory = async (
   label: string,
   emoji: string,
@@ -102,8 +92,7 @@ export const addCategory = async (
   return id;
 };
 
-// Delete a category only if no expense references it; returns false otherwise so
-// the UI can explain why nothing happened.
+// Delete a category only if no expense references it.
 export const deleteCategory = async (id: string): Promise<boolean> => {
   const inUse = await db.expenses.where('categoryId').equals(id).count();
   if (inUse > 0) return false;
@@ -119,100 +108,63 @@ export interface CopyResult {
 }
 
 // Clone the previous month's recurring expenses into `targetMonth`, keeping the
-// day-of-month. Skips any expense that already exists this month with the same
-// category + amount + payer, so repeated taps don't duplicate bills.
+// day-of-month. Skips duplicates by category + amount (payer is gone).
 export const copyFixedBillsFromPreviousMonth = async (
   targetMonth: MonthKey,
 ): Promise<CopyResult> => {
   const previousMonth = shiftMonth(targetMonth, -1);
-
   return db.transaction('rw', db.expenses, async () => {
     const [previous, current] = await Promise.all([
       db.expenses.where('month').equals(previousMonth).toArray(),
       db.expenses.where('month').equals(targetMonth).toArray(),
     ]);
-
-    const recurring = previous.filter((expense) => expense.recurring);
+    const recurring = previous.filter((e) => e.recurring);
     const existingKeys = new Set(
-      current.map((e) => `${e.categoryId}|${e.amountCents}|${e.payer}`),
+      current.map((e) => `${e.categoryId}|${e.amountCents}`),
     );
-
     let copied = 0;
     let skipped = 0;
-
     for (const expense of recurring) {
-      const key = `${expense.categoryId}|${expense.amountCents}|${expense.payer}`;
+      const key = `${expense.categoryId}|${expense.amountCents}`;
       if (existingKeys.has(key)) {
         skipped += 1;
         continue;
       }
-      const date = moveDateToMonth(expense.date, targetMonth);
-      const clone: Expense = {
-        date,
+      await db.expenses.add({
+        date: moveDateToMonth(expense.date, targetMonth),
         month: targetMonth,
         categoryId: expense.categoryId,
         amountCents: expense.amountCents,
-        payer: expense.payer,
         note: expense.note,
         recurring: true,
-      };
-      await db.expenses.add(clone);
+      });
       existingKeys.add(key);
       copied += 1;
     }
-
     return { copied, skipped };
   });
 };
 
-// ---- Settle-up -------------------------------------------------------------
+// ---- Export ----------------------------------------------------------------
 
-export interface SettleUp {
-  total: number; // cents
-  mePaid: number; // cents actually fronted by `me` (own + me's share of joint)
-  partnerPaid: number; // cents actually fronted by `partner`
-  meFairShare: number; // cents `me` should ultimately bear
-  partnerFairShare: number;
-  // Positive `partnerOwesMe` => partner owes me; negative => I owe partner.
-  partnerOwesMe: number;
-}
-
-const sumBy = (rows: Expense[], predicate: (e: Expense) => boolean): number =>
-  rows.reduce((acc, e) => (predicate(e) ? acc + e.amountCents : acc), 0);
-
-// Computes who fronted what and the net balance for a month.
-export const computeSettleUp = (
-  rows: Expense[],
-  splitRatio: number,
-): SettleUp => {
-  const total = sumBy(rows, () => true);
-  const joint = sumBy(rows, (e) => e.payer === 'joint');
-  const meOwn = sumBy(rows, (e) => e.payer === 'me');
-  const partnerOwn = sumBy(rows, (e) => e.payer === 'partner');
-
-  // What each person actually paid out of pocket. Joint expenses are assumed to
-  // be split at payment time too, so each fronts their share of joint costs.
-  const mePaid = meOwn + Math.round(joint * splitRatio);
-  const partnerPaid = partnerOwn + (joint - Math.round(joint * splitRatio));
-
-  // What each person should ultimately bear of the whole month.
-  const meFairShare = Math.round(total * splitRatio);
-  const partnerFairShare = total - meFairShare;
-
-  // If I fronted more than my fair share, my partner owes me the difference.
-  const partnerOwesMe = mePaid - meFairShare;
-
-  return {
-    total,
-    mePaid,
-    partnerPaid,
-    meFairShare,
-    partnerFairShare,
-    partnerOwesMe,
-  };
+// Serialize all local data to a JSON string (for the Settings "Export data").
+export const exportAllData = async (): Promise<string> => {
+  const [expenses, categories, settings] = await Promise.all([
+    db.expenses.toArray(),
+    db.categories.toArray(),
+    db.settings.get(SETTINGS_KEY),
+  ]);
+  return JSON.stringify(
+    { app: 'ourbudget', version: 1, expenses, categories, settings },
+    null,
+    2,
+  );
 };
 
-// ---- Aggregations ----------------------------------------------------------
+// ---- Aggregations / selectors ----------------------------------------------
+
+export const sumCents = (rows: Expense[]): number =>
+  rows.reduce((acc, e) => acc + e.amountCents, 0);
 
 export interface CategoryTotal {
   categoryId: string;
@@ -223,18 +175,63 @@ export interface CategoryTotal {
 export const totalsByCategory = (rows: Expense[]): CategoryTotal[] => {
   const map = new Map<string, number>();
   for (const expense of rows) {
-    map.set(
-      expense.categoryId,
-      (map.get(expense.categoryId) ?? 0) + expense.amountCents,
-    );
+    map.set(expense.categoryId, (map.get(expense.categoryId) ?? 0) + expense.amountCents);
   }
   return Array.from(map.entries())
     .map(([categoryId, amountCents]) => ({ categoryId, amountCents }))
     .sort((a, b) => b.amountCents - a.amountCents);
 };
 
-export const sumCents = (rows: Expense[]): number =>
-  rows.reduce((acc, e) => acc + e.amountCents, 0);
+export interface BreakdownSlice {
+  id: string; // categoryId or '__other__'
+  label: string;
+  emoji: string;
+  color: string;
+  amountCents: number;
+  pct: number; // 0..100 of the month total
+  isOther: boolean;
+}
+
+const OTHER_COLOR = '#A7B0AA';
+
+// Top-N categories by amount + a single aggregated "Other" bucket.
+export const breakdownTopNPlusOther = (
+  rows: Expense[],
+  categories: Map<string, Category>,
+  topN = 5,
+): { total: number; slices: BreakdownSlice[] } => {
+  const totals = totalsByCategory(rows);
+  const total = totals.reduce((acc, t) => acc + t.amountCents, 0);
+  if (total === 0) return { total: 0, slices: [] };
+
+  const top = totals.slice(0, topN);
+  const rest = totals.slice(topN);
+  const slices: BreakdownSlice[] = top.map((t) => {
+    const category = categories.get(t.categoryId);
+    return {
+      id: t.categoryId,
+      label: category?.label ?? 'Unknown',
+      emoji: category?.emoji ?? '🏷️',
+      color: category?.color ?? OTHER_COLOR,
+      amountCents: t.amountCents,
+      pct: (t.amountCents / total) * 100,
+      isOther: false,
+    };
+  });
+  if (rest.length > 0) {
+    const restTotal = rest.reduce((acc, t) => acc + t.amountCents, 0);
+    slices.push({
+      id: '__other__',
+      label: rest.length === 1 ? 'Other' : `Other · ${rest.length} more`,
+      emoji: '•',
+      color: OTHER_COLOR,
+      amountCents: restTotal,
+      pct: (restTotal / total) * 100,
+      isOther: true,
+    });
+  }
+  return { total, slices };
+};
 
 export interface MonthTotal {
   month: MonthKey;
@@ -247,21 +244,45 @@ export const totalsByMonth = (
   months: MonthKey[],
 ): MonthTotal[] => {
   const map = new Map<MonthKey, number>();
-  for (const month of months) map.set(month, 0);
-  for (const expense of rows) {
-    if (map.has(expense.month)) {
-      map.set(expense.month, (map.get(expense.month) ?? 0) + expense.amountCents);
-    }
+  for (const m of months) map.set(m, 0);
+  for (const e of rows) {
+    if (map.has(e.month)) map.set(e.month, (map.get(e.month) ?? 0) + e.amountCents);
   }
   return months.map((month) => ({ month, amountCents: map.get(month) ?? 0 }));
 };
 
-export const payerLabel = (
-  payer: Payer,
-  meName: string,
-  partnerName: string,
-): string => {
-  if (payer === 'me') return meName;
-  if (payer === 'partner') return partnerName;
-  return 'Joint';
+export interface Mover {
+  categoryId: string;
+  label: string;
+  emoji: string;
+  deltaCents: number; // current - previous (positive = up)
+}
+
+// Biggest category changes between two months' rows, by absolute delta.
+export const biggestMovers = (
+  currentRows: Expense[],
+  previousRows: Expense[],
+  categories: Map<string, Category>,
+  limit = 3,
+): Mover[] => {
+  const cur = new Map<string, number>();
+  const prev = new Map<string, number>();
+  for (const e of currentRows) cur.set(e.categoryId, (cur.get(e.categoryId) ?? 0) + e.amountCents);
+  for (const e of previousRows) prev.set(e.categoryId, (prev.get(e.categoryId) ?? 0) + e.amountCents);
+  const ids = new Set([...cur.keys(), ...prev.keys()]);
+  const movers: Mover[] = [];
+  for (const id of ids) {
+    const delta = (cur.get(id) ?? 0) - (prev.get(id) ?? 0);
+    if (delta === 0) continue;
+    const category = categories.get(id);
+    movers.push({
+      categoryId: id,
+      label: category?.label ?? 'Unknown',
+      emoji: category?.emoji ?? '🏷️',
+      deltaCents: delta,
+    });
+  }
+  return movers
+    .sort((a, b) => Math.abs(b.deltaCents) - Math.abs(a.deltaCents))
+    .slice(0, limit);
 };

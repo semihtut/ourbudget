@@ -1,6 +1,7 @@
 // Core domain types. Money is always integer cents; dates are 'YYYY-MM-DD'.
+// Per the redesign, the app no longer tracks who paid — every expense comes out
+// of one shared pot. There is no Payer type and no settle-up.
 
-export type Payer = 'me' | 'partner' | 'joint';
 export type MonthKey = string; // 'YYYY-MM'
 export type CategoryKind = 'fixed' | 'variable';
 
@@ -10,7 +11,6 @@ export interface Expense {
   date: string; // 'YYYY-MM-DD'
   categoryId: string;
   amountCents: number; // store money as integer cents — never floats
-  payer: Payer;
   note?: string;
   recurring: boolean; // true => offered when copying fixed bills to a new month
 }
@@ -26,7 +26,8 @@ export interface Category {
 // Settings is a single row keyed by a fixed string in Dexie (store: 'key').
 export interface Settings {
   key: string; // always 'app'
+  householdName: string; // e.g. "Ada & Kerem"
   meName: string;
   partnerName: string;
-  splitRatio: number; // share borne by `me` for joint costs, default 0.5
+  onboarded: boolean; // first-run flow completed
 }

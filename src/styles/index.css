@@ -11,19 +11,11 @@
 
   body {
     margin: 0;
+    background: var(--bg);
     color: var(--ink);
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    /* Premium dark gradient: midnight slate with faint pine / violet glows so
-       glass panels and the treemap pop. */
-    background-color: var(--bg);
-    background-image:
-      radial-gradient(70rem 70rem at 8% -10%, rgba(63, 154, 128, 0.16), transparent 55%),
-      radial-gradient(56rem 56rem at 108% 4%, rgba(138, 111, 168, 0.14), transparent 55%),
-      radial-gradient(60rem 60rem at 92% 100%, rgba(94, 155, 194, 0.1), transparent 55%),
-      linear-gradient(180deg, #0b1020 0%, #0a0e1a 60%, #090c16 100%);
-    background-attachment: fixed;
     min-height: 100dvh;
   }
 
@@ -32,6 +24,7 @@
     font-feature-settings: 'tnum' 1;
   }
 
+  /* Fraunces only on the wordmark, big numbers, and screen titles. */
   .font-display {
     font-family: 'Fraunces', Georgia, serif;
   }
@@ -41,34 +34,25 @@
     outline-offset: 2px;
     border-radius: 4px;
   }
+
+  /* Section/eyebrow label used throughout. */
+  .lbl {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
 }
 
 @layer utilities {
-  /* Frosted glass panel — dark, translucent. */
-  .glass {
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    backdrop-filter: blur(22px) saturate(135%);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--glass-shadow);
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
   }
 
-  /* Slightly deeper glass for the unified data container. */
-  .glass-deep {
-    background: linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.025)
-    );
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    backdrop-filter: blur(22px) saturate(135%);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--glass-shadow);
-  }
-
-  /* Subtle, fast entrances. Neutralized by the reduced-motion block below. */
   @keyframes ledger-fade {
     from {
       opacity: 0;
@@ -80,7 +64,7 @@
   @keyframes ledger-sheet {
     from {
       opacity: 0;
-      transform: translateY(14px);
+      transform: translateY(16px);
     }
     to {
       opacity: 1;
@@ -91,7 +75,7 @@
     animation: ledger-fade 0.18s ease-out;
   }
   .animate-sheet {
-    animation: ledger-sheet 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: ledger-sheet 0.22s cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
