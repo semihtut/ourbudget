@@ -93,14 +93,14 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
   return (
     <Modal title={existing ? 'Edit expense' : 'Add expense'} onClose={onClose} bare>
       <form onSubmit={handleSubmit} className="flex flex-col">
-        <p className="text-center text-base font-semibold text-ink">
+        <p className="text-center text-base font-extrabold text-ink">
           {existing ? 'Edit expense' : 'Add expense'}
         </p>
 
         {/* Amount — the focal field. */}
         <label className="mt-5 block">
           <div className="flex items-center justify-center gap-1">
-            <span className="font-display text-4xl font-semibold text-faint">€</span>
+            <span className="text-4xl font-extrabold text-faint">€</span>
             <input
               type="text"
               inputMode="decimal"
@@ -109,7 +109,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
               aria-label="Amount in euros"
-              className="w-[7ch] bg-transparent text-center font-display text-5xl font-semibold text-ink outline-none tnum placeholder:text-line"
+              className="w-[7ch] bg-transparent text-center text-5xl font-extrabold text-ink outline-none tnum placeholder:text-line"
             />
           </div>
         </label>
@@ -234,7 +234,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
         <button
           type="submit"
           disabled={saving}
-          className="mt-5 rounded-lg bg-accent py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.01] active:scale-95 disabled:opacity-60"
+          className="mt-5 rounded-full bg-accent py-3.5 text-sm font-bold text-white shadow-card transition-transform hover:scale-[1.01] active:scale-95 disabled:opacity-60"
         >
           {existing ? 'Save changes' : 'Save expense'}
         </button>

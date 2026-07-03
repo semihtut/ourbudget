@@ -9,9 +9,9 @@ interface MonthlyTrendProps {
   height?: number; // px of the plot area
 }
 
-const CURRENT = '#9C3F14'; // accent rust — selected month
-const PEAK = '#221D14'; // ink — the seasonal spike
-const BASE = '#DDD3BC'; // de-emphasis — context months
+const CURRENT = '#6C5CE7'; // accent violet — selected month
+const PEAK = '#2D2A3E'; // ink — the seasonal spike
+const BASE = '#E4E1F5'; // de-emphasis — context months
 
 // Emphasis column chart: the selected month in accent, the seasonal peak in
 // ink, everything else recessive. Values are labeled selectively (current +
@@ -26,7 +26,7 @@ export function MonthlyTrend({ series, currentMonth, height = 150 }: MonthlyTren
 
   return (
     <div>
-      <div className="flex items-end gap-2 border-b border-line" style={{ height }}>
+      <div className="flex items-end gap-2 border-b-2 border-line" style={{ height }}>
         {series.map((point) => {
           const isCurrent = point.month === currentMonth;
           const isPeak = point.month === peakMonth;
@@ -48,7 +48,7 @@ export function MonthlyTrend({ series, currentMonth, height = 150 }: MonthlyTren
                 </span>
               )}
               <div
-                className="w-full max-w-[24px] rounded-t-[4px]"
+                className="w-full max-w-[24px] rounded-t-[6px]"
                 style={{
                   height: `${Math.max(pct, point.amountCents > 0 ? 3 : 0)}%`,
                   backgroundColor: isCurrent ? CURRENT : isPeak ? PEAK : BASE,

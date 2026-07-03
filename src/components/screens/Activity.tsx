@@ -42,18 +42,18 @@ export function Activity({ rows, categoryMap, onEdit, onDelete }: ActivityProps)
   }, [rows, filter, query, categoryMap]);
 
   const chip = (active: boolean) =>
-    `shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs transition-colors ${
+    `shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
       active
-        ? 'border-ink bg-ink text-surface'
-        : 'border-line bg-surface text-muted hover:border-accent hover:text-accent'
+        ? 'bg-accent text-white shadow-card'
+        : 'bg-surface text-muted shadow-card hover:text-accent-deep'
     }`;
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="font-display text-3xl font-semibold text-ink">Activity</h2>
+      <h2 className="text-3xl font-extrabold text-ink">Activity</h2>
 
       {/* Search */}
-      <div className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2.5">
+      <div className="flex items-center gap-2 rounded-full bg-surface px-4 py-2.5 shadow-card">
         <SearchIcon className="h-4 w-4 text-faint" />
         <input
           type="search"

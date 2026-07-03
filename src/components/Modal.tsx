@@ -40,7 +40,7 @@ export function Modal({ title, onClose, children, bare = false }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="animate-sheet max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-surface text-ink shadow-sheet outline-none sm:max-w-md sm:rounded-xl sm:border sm:border-line sm:shadow-card"
+        className="animate-sheet max-h-[92vh] w-full overflow-y-auto rounded-t-[28px] bg-surface text-ink shadow-sheet outline-none sm:max-w-md sm:rounded-[28px] sm:shadow-card"
       >
         {bare ? (
           <div className="px-6 pb-7 pt-4">

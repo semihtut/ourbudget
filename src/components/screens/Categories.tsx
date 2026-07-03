@@ -51,7 +51,7 @@ export function Categories({ categories, onBack }: CategoriesProps) {
         <ul className="card divide-y divide-line-row overflow-hidden p-0">
           {list.map((category) => (
             <li key={category.id} className="group flex items-center gap-3 px-3.5 py-3">
-              <span className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-[6px] border border-line bg-bg text-sm">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-bg text-sm">
                 {category.emoji}
               </span>
               <span className="flex-1 truncate text-sm text-ink">{category.label}</span>
@@ -81,11 +81,11 @@ export function Categories({ categories, onBack }: CategoriesProps) {
           type="button"
           onClick={onBack}
           aria-label="Back to settings"
-          className="grid h-8 w-8 place-items-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-accent-soft active:scale-95"
+          className="grid h-9 w-9 place-items-center rounded-full bg-surface text-ink shadow-card transition-colors hover:bg-accent-soft active:scale-95"
         >
           <ChevronLeftIcon className="h-4 w-4" />
         </button>
-        <h2 className="font-display text-3xl font-semibold text-ink">Categories</h2>
+        <h2 className="text-3xl font-extrabold text-ink">Categories</h2>
       </div>
 
       {renderGroup('Fixed', fixed)}
@@ -138,7 +138,7 @@ export function Categories({ categories, onBack }: CategoriesProps) {
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="rounded-2xl border border-dashed border-line py-3.5 text-sm font-medium text-accent transition-colors hover:bg-accent-soft"
+          className="rounded-card border-2 border-dashed border-line py-3.5 text-sm font-bold text-accent-deep transition-colors hover:bg-accent-soft"
         >
           ＋ Add category
         </button>

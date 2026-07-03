@@ -40,7 +40,7 @@ export function CopyFixedBills({ month, categoryMap, onClose }: CopyFixedBillsPr
     <Modal title="Copy fixed bills" onClose={onClose} bare>
       <div className="flex flex-col">
         <p className="lbl">New month started</p>
-        <h2 className="font-display mt-1 text-xl font-semibold text-ink">
+        <h2 className="mt-2 text-xl font-extrabold text-ink">
           Copy {bills.length} fixed {bills.length === 1 ? 'bill' : 'bills'}?
         </h2>
         <p className="mt-1 text-sm text-muted">
@@ -48,7 +48,7 @@ export function CopyFixedBills({ month, categoryMap, onClose }: CopyFixedBillsPr
           {monthLabel(month)}. Duplicates are skipped.
         </p>
 
-        <ul className="mt-4 max-h-64 divide-y divide-line-row overflow-y-auto rounded-lg border border-line">
+        <ul className="mt-4 max-h-64 divide-y divide-line-row overflow-y-auto rounded-2xl bg-bg px-2">
           {bills.map((bill) => {
             const category = categoryMap.get(bill.categoryId);
             return (
@@ -79,7 +79,7 @@ export function CopyFixedBills({ month, categoryMap, onClose }: CopyFixedBillsPr
           type="button"
           onClick={handleCopy}
           disabled={busy || bills.length === 0}
-          className="mt-5 rounded-lg bg-accent py-3.5 text-sm font-semibold text-white transition-transform active:scale-[.99] disabled:opacity-60"
+          className="mt-5 rounded-full bg-accent py-3.5 text-sm font-bold text-white shadow-card transition-transform hover:scale-[1.01] active:scale-[.98] disabled:opacity-60"
         >
           Copy {bills.length} {bills.length === 1 ? 'bill' : 'bills'}
         </button>

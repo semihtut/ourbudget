@@ -126,10 +126,15 @@ export default function App() {
   return (
     <div className="min-h-dvh pb-24 md:pb-10">
       {/* Top bar — wordmark, month switcher, desktop nav + add button. */}
-      <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-line-soft bg-bg/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
-          <h1 className="font-display max-w-[45vw] truncate text-lg font-semibold italic text-ink md:max-w-[200px] md:shrink-0">
-            {wordmark}
+          <h1 className="flex min-w-0 items-center gap-2 md:max-w-[220px] md:shrink-0">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-accent text-sm font-extrabold text-white">
+              €
+            </span>
+            <span className="max-w-[38vw] truncate text-lg font-extrabold text-ink md:max-w-none">
+              {wordmark}
+            </span>
           </h1>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
@@ -141,9 +146,9 @@ export default function App() {
                   type="button"
                   onClick={() => goToTab(key)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition-colors ${
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold transition-colors ${
                     isActive
-                      ? 'bg-accent-soft font-medium text-accent'
+                      ? 'bg-accent-soft text-accent-deep'
                       : 'text-muted hover:text-ink'
                   }`}
                 >
@@ -159,7 +164,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={promptInstall}
-                className="hidden rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-medium text-accent transition-colors hover:bg-accent-soft sm:block"
+                className="hidden rounded-full border-2 border-accent-soft bg-surface px-3.5 py-1.5 text-sm font-bold text-accent-deep transition-colors hover:bg-accent-soft sm:block"
               >
                 Install
               </button>
@@ -167,7 +172,7 @@ export default function App() {
             <button
               type="button"
               onClick={openAdd}
-              className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white transition-transform hover:scale-[1.03] active:scale-95 md:flex"
+              className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-4 py-2 text-sm font-bold text-white shadow-card transition-transform hover:scale-[1.03] active:scale-95 md:flex"
             >
               <PlusIcon className="h-4 w-4" /> Add expense
             </button>

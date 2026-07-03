@@ -116,29 +116,32 @@ Transportation (variable), Groceries (variable). Let the user add custom ones.
 
 ## Design system (`src/styles/tokens.css`)
 
-Warm editorial print — a typeset account book. Warm paper, dark ink, hairline
-rules, one deep rust accent. Personality lives in the big Fraunces numerals and
-the charts; chrome stays quiet. Sections are open layouts divided by hairline
-rules (`LABEL ————`), not floating cards; panels are used sparingly.
+Playful & friendly — soft lavender paper, white pillowy cards, one cheerful
+violet accent, a mint-green "Left to Spend" card, and a red-panda mascot
+(`components/Mascot.tsx`, inline SVG). Rounded everything; shadows are soft
+colored washes. Section headers are little lavender pill badges (`.lbl`).
 
 ```
---bg:#F4EFE3  --surface:#FCFAF3  --ink:#221D14  --muted:#5C5648  --faint:#8B8272
---line:#DED5C2  --accent:#9C3F14 (rust)  --accent-soft:#F3E4D6
---pos:#0E7E60 (savings/less)  --neg:#B3261E (overspend/more)
-radius: 8px (print-like)   shadow: near-none — borders do the separating
+--bg:#F7F6FD  --surface:#FFFFFF  --ink:#2D2A3E  --muted:#6E6A85  --faint:#9A96B0
+--accent:#6C5CE7 (violet)  --accent-deep:#5F4BDB  --accent-soft:#EDEBFF
+--pos:#0D8A62/#2ECC8F/#E9F9F0 (savings text/fill/wash)
+--neg:#E03131/#FDECEC (overspend)
+radius: 20px cards / 28px sheets / pills everywhere
+shadow: 0 6px 24px rgba(108,92,231,.08) — soft violet wash
 ```
 
 Categorical palette (fixed order, CVD + 3:1 contrast validated):
-`#C0521E #0E7E60 #C27C00 #3C72C6 #A0489C #6C8B21 #C64B70 #0E86A0 #A56A21
-#6461D6 #4E8A3A #B0475A`. "Other" bucket: `#AFA68E`.
+`#6C5CE7 #0CA678 #E8590C #1C7ED6 #D6336C #5C940D #7048E8 #D9480F #089FC8
+#9C36B5 #2F9E44 #E64980`. "Other" bucket: `#B9B4CE`.
 
-Type: **Fraunces** (display: wordmark + hero numerals + screen titles; italic
-for the month name and insight lines) + **Inter** (everything else).
-`tabular-nums` on aligned money columns only — hero numerals stay proportional.
+Type: **Nunito** everywhere (400/600/700/800) — headings and hero numerals are
+extrabold. `tabular-nums` on aligned money columns only.
 
-Charts: category breakdown is a stacked spine bar (2px paper gaps) + ranked
-list; the trend chart uses emphasis (current month = rust, seasonal peak = ink,
-context = recessive) with values labeled selectively, never on every bar.
+Charts: category breakdown is a stacked spine bar (2px surface gaps) + ranked
+list; the trend chart uses emphasis (current month = violet, seasonal peak =
+ink, context = pale lavender) with values labeled selectively, never on every
+bar. Deltas: green soft pill = spent less / left to spend, red = more / over.
+The mascot appears on onboarding, empty states, and the no-income card.
 
 ## Conventions
 

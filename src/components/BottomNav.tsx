@@ -24,7 +24,7 @@ export function BottomNav({ active, onChange }: BottomNavProps) {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/95 backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line-soft bg-surface/95 backdrop-blur md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="mx-auto flex max-w-md items-stretch justify-around px-2 py-2">
@@ -36,12 +36,12 @@ export function BottomNav({ active, onChange }: BottomNavProps) {
               type="button"
               onClick={() => onChange(key)}
               aria-current={isActive ? 'page' : undefined}
-              className={`flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 transition-colors ${
-                isActive ? 'text-accent' : 'text-faint hover:text-muted'
+              className={`flex flex-1 flex-col items-center gap-1 rounded-2xl py-1.5 transition-colors ${
+                isActive ? 'bg-accent-soft text-accent-deep' : 'text-faint hover:text-muted'
               }`}
             >
               <Icon className="h-[22px] w-[22px]" />
-              <span className={`text-[10px] ${isActive ? 'font-semibold' : ''}`}>
+              <span className={`text-[10px] font-bold ${isActive ? '' : 'font-semibold'}`}>
                 {label}
               </span>
             </button>

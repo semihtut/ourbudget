@@ -65,6 +65,18 @@ class LedgerDB extends Dexie {
         ),
       );
     });
+    // v5 — playful redesign: same remap onto the new bright palette for users
+    // who already ran the v4 upgrade.
+    this.version(5).upgrade(async (tx) => {
+      const categories = await tx.table('categories').toArray();
+      await Promise.all(
+        categories.map((category, index) =>
+          tx
+            .table('categories')
+            .update(category.id, { color: PALETTE[index % PALETTE.length] }),
+        ),
+      );
+    });
   }
 }
 

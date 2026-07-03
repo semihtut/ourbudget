@@ -1,6 +1,7 @@
 import { CategorySpine } from '../charts/CategorySpine';
 import { MonthlyTrend } from '../charts/MonthlyTrend';
 import { IncomeSavings } from '../IncomeSavings';
+import { Mascot } from '../Mascot';
 import { TransactionRow } from '../TransactionList';
 import { formatEurWhole } from '../../lib/money';
 import { monthLabel, monthShortLabel, shiftMonth } from '../../lib/month';
@@ -19,30 +20,36 @@ interface HomeProps {
   onViewAll: () => void;
 }
 
-// Insight line: "€280 less than May · 38 transactions".
-function insight(month: MonthKey, total: number, prev: number | null, count: number): string {
-  const txt = `${count} transaction${count === 1 ? '' : 's'}`;
-  if (prev === null || prev === 0) return count === 0 ? 'No expenses yet' : txt;
-  const delta = total - prev;
-  if (delta === 0) return `Same as ${monthShortLabel(shiftMonth(month, -1))} · ${txt}`;
-  const dir = delta > 0 ? 'more' : 'less';
-  return `${formatEurWhole(Math.abs(delta))} ${dir} than ${monthShortLabel(shiftMonth(month, -1))} · ${txt}`;
-}
-
-// A print-style section header: LABEL ————————————
-function SectionHeader({
-  label,
-  action,
+// "▼ €86 less than Jun" / "▲ €120 more than Jun" as a soft colored pill.
+function DeltaChip({
+  month,
+  total,
+  prev,
 }: {
-  label: string;
-  action?: React.ReactNode;
+  month: MonthKey;
+  total: number;
+  prev: number | null;
 }) {
+  if (prev === null || prev === 0) return null;
+  const delta = total - prev;
+  const prevLabel = monthShortLabel(shiftMonth(month, -1));
+  if (delta === 0) {
+    return (
+      <span className="inline-block rounded-full bg-track px-3 py-1 text-xs font-bold text-muted">
+        Same as {prevLabel}
+      </span>
+    );
+  }
+  const more = delta > 0;
   return (
-    <div className="mb-4 flex items-center gap-3">
-      <span className="lbl">{label}</span>
-      <span className="h-px flex-1 bg-line" aria-hidden />
-      {action}
-    </div>
+    <span
+      className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${
+        more ? 'bg-up-soft text-up' : 'bg-down-soft text-down'
+      }`}
+    >
+      {more ? '▲' : '▼'} {formatEurWhole(Math.abs(delta))} {more ? 'more' : 'less'} than{' '}
+      {prevLabel}
+    </span>
   );
 }
 
@@ -62,60 +69,59 @@ export function Home({
     .slice(0, 3);
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* Hero — typeset like a ledger total. */}
-      <section className="pt-2 text-center">
-        <div className="flex items-center gap-4">
-          <span className="h-px flex-1 bg-line" aria-hidden />
-          <p className="lbl">Spent in {monthLabel(month).split(' ')[0]}</p>
-          <span className="h-px flex-1 bg-line" aria-hidden />
-        </div>
-        <p className="mt-4 font-display text-[64px] font-semibold leading-none tracking-tight text-ink md:text-7xl">
+    <div className="flex flex-col gap-4">
+      {/* Hero card */}
+      <section className="card p-6 text-center">
+        <p className="lbl">Spent in {monthLabel(month).split(' ')[0]}</p>
+        <p className="mt-3 font-display text-[56px] font-extrabold leading-none tracking-tight text-ink md:text-6xl">
           {formatEurWhole(total)}
         </p>
-        <p className="mt-3 font-display italic text-muted">
-          {insight(month, total, prevTotalCents, rows.length)}
-        </p>
-        <div className="rule-double mx-auto mt-5 w-24" aria-hidden />
+        <div className="mt-3 flex items-center justify-center gap-2">
+          <DeltaChip month={month} total={total} prev={prevTotalCents} />
+          <span className="text-xs font-semibold text-faint">
+            {rows.length} transaction{rows.length === 1 ? '' : 's'}
+          </span>
+        </div>
       </section>
 
-      {/* Income & savings */}
+      {/* Left to spend */}
       <IncomeSavings month={month} spentCents={total} />
 
       {/* Where it went */}
-      <section>
-        <SectionHeader label="Where it went" />
+      <section className="card p-5">
+        <p className="lbl mb-4">Where it went</p>
         <CategorySpine rows={rows} categories={categories} />
       </section>
 
       {/* Last 6 months */}
       {trendSeries.some((t) => t.amountCents > 0) && (
-        <section>
-          <SectionHeader label="Last 6 months" />
+        <section className="card p-5">
+          <p className="lbl mb-4">Last 6 months</p>
           <MonthlyTrend series={trendSeries} currentMonth={month} height={110} />
         </section>
       )}
 
       {/* Recent */}
-      <section>
-        <SectionHeader
-          label="Recent"
-          action={
-            rows.length > 0 ? (
-              <button
-                type="button"
-                onClick={onViewAll}
-                className="shrink-0 text-xs font-medium text-accent hover:underline"
-              >
-                View all {rows.length} ›
-              </button>
-            ) : undefined
-          }
-        />
+      <section className="card p-5">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="lbl">Recent</p>
+          {rows.length > 0 && (
+            <button
+              type="button"
+              onClick={onViewAll}
+              className="text-xs font-bold text-accent-deep hover:underline"
+            >
+              View all {rows.length} ›
+            </button>
+          )}
+        </div>
         {recent.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted">
-            No transactions yet — tap + to add one.
-          </p>
+          <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <Mascot size={80} className="animate-bob" />
+            <p className="text-sm font-semibold text-muted">
+              No spends yet this month — tap + to add your first one!
+            </p>
+          </div>
         ) : (
           <ul className="divide-y divide-line-row">
             {recent.map((expense) => (

@@ -55,7 +55,7 @@ export function Settings({
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="font-display text-3xl font-semibold text-ink">Settings</h2>
+      <h2 className="text-3xl font-extrabold text-ink">Settings</h2>
 
       <Group label="Household">
         <label className="flex items-center justify-between gap-3 px-4 py-3.5">

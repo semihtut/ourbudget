@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Modal } from '../Modal';
+import { Mascot } from '../Mascot';
 import { updateSettings } from '../../db/queries';
 
 interface OnboardingProps {
@@ -27,10 +28,8 @@ export function Onboarding({ onDone }: OnboardingProps) {
     // No onClose path — onboarding is mandatory on first run.
     <Modal title="Welcome" onClose={() => {}} bare>
       <div className="flex flex-col items-center text-center">
-        <div className="grid h-14 w-14 place-items-center rounded-lg bg-accent font-display text-2xl italic text-white shadow-card">
-          €
-        </div>
-        <h1 className="font-display mt-5 text-2xl font-semibold leading-snug text-ink">
+        <Mascot size={110} className="animate-bob" />
+        <h1 className="mt-4 text-2xl font-extrabold leading-snug text-ink">
           Your shared budget, offline.
         </h1>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted">
@@ -39,7 +38,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
         </p>
 
         <div className="mt-7 w-full text-left">
-          <label htmlFor="household-name" className="lbl mb-1.5 block px-1">
+          <label htmlFor="household-name" className="lbl mb-1.5">
             Household name
           </label>
           <input
@@ -51,7 +50,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
             }}
             placeholder="e.g. Ada & Kerem"
             autoFocus
-            className="w-full rounded-lg border border-line bg-bg px-4 py-3 text-sm text-ink outline-none focus:border-accent placeholder:text-faint"
+            className="w-full rounded-2xl border-2 border-line bg-bg px-4 py-3 text-sm font-semibold text-ink outline-none focus:border-accent placeholder:text-faint"
           />
         </div>
 
@@ -59,7 +58,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
           type="button"
           onClick={handleStart}
           disabled={saving}
-          className="mt-5 w-full rounded-lg bg-accent py-3.5 text-sm font-semibold text-white transition-transform active:scale-[.99] disabled:opacity-60"
+          className="mt-5 w-full rounded-full bg-accent py-3.5 text-sm font-bold text-white shadow-card transition-transform hover:scale-[1.01] active:scale-[.98] disabled:opacity-60"
         >
           Get started
         </button>

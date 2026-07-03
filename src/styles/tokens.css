@@ -1,46 +1,49 @@
-/* Design tokens — "warm editorial print" (Fable edition).
-   A typeset account book: warm paper, dark ink, hairline rules, one deep rust
-   accent. Personality lives in the big Fraunces numerals and the charts;
-   chrome stays quiet. Categorical palette validated (CVD + contrast) against
-   the surface color. */
+/* Design tokens — "playful & friendly" (Fable edition).
+   Soft lavender paper, white pillowy cards, one cheerful violet accent, a
+   mint-green savings card, and a mascot. Rounded everything; shadows are soft
+   colored washes, never hard lines. Categorical palette validated (CVD +
+   contrast) against white cards. */
 :root {
-  --bg: #f4efe3; /* warm paper */
-  --surface: #fcfaf3; /* raised paper / panels */
-  --ink: #221d14; /* primary text */
-  --muted: #5c5648; /* secondary text */
-  --faint: #8b8272; /* tertiary / placeholders */
-  --line: #ded5c2; /* hairlines */
-  --line-soft: #e8e1d1; /* inner dividers */
-  --line-row: #efe9db; /* list-row dividers */
+  --bg: #f7f6fd; /* lavender-white app background */
+  --surface: #ffffff; /* cards */
+  --ink: #2d2a3e; /* primary text */
+  --muted: #6e6a85; /* secondary text */
+  --faint: #9a96b0; /* tertiary / placeholders */
+  --line: #e9e6f7; /* soft borders */
+  --line-soft: #f0eefa; /* inner dividers */
+  --line-row: #f4f2fb; /* list-row dividers */
 
-  --accent: #9c3f14; /* deep rust — actions, links, current month */
-  --accent-bright: #c0521e; /* chart slot 1 / hover states */
-  --accent-soft: #f3e4d6; /* tints, recurring badge bg */
-  --track: #e8e1d1; /* progress-bar track */
+  --accent: #6c5ce7; /* violet — actions, active nav, current month */
+  --accent-deep: #5f4bdb; /* links / text on white */
+  --accent-soft: #edebff; /* pill badges, tints */
+  --track: #eeecf9; /* progress-bar track */
 
-  --pos: #0e7e60; /* savings / spent less */
-  --neg: #b3261e; /* overspend / spent more */
-  --chart-de: #ddd3bc; /* de-emphasised chart marks */
+  --pos: #0d8a62; /* savings text (green) */
+  --pos-fill: #2ecc8f; /* savings progress fill */
+  --pos-soft: #e9f9f0; /* savings card wash */
+  --neg: #e03131; /* overspend */
+  --neg-soft: #fdecec; /* overspend card wash */
+  --chart-de: #e4e1f5; /* de-emphasised chart marks */
 
-  --radius: 8px; /* sharper, print-like */
-  --radius-lg: 12px;
-  --shadow: 0 1px 0 rgba(34, 29, 20, 0.05);
-  --shadow-sheet: 0 -8px 40px rgba(34, 29, 20, 0.16);
+  --radius: 20px;
+  --radius-lg: 28px;
+  --shadow: 0 6px 24px rgba(108, 92, 231, 0.08), 0 1px 2px rgba(45, 42, 62, 0.04);
+  --shadow-sheet: 0 -12px 48px rgba(45, 42, 62, 0.18);
 }
 
 /* Categorical palette (assigned per Category.color, fixed order, never cycled).
    Validated: lightness band, chroma floor, adjacent-pair CVD, 3:1 contrast. */
 :root {
-  --c0: #c0521e;
-  --c1: #0e7e60;
-  --c2: #c27c00;
-  --c3: #3c72c6;
-  --c4: #a0489c;
-  --c5: #6c8b21;
-  --c6: #c64b70;
-  --c7: #0e86a0;
-  --c8: #a56a21;
-  --c9: #6461d6;
-  --c10: #4e8a3a;
-  --c11: #b0475a;
+  --c0: #6c5ce7;
+  --c1: #0ca678;
+  --c2: #e8590c;
+  --c3: #1c7ed6;
+  --c4: #d6336c;
+  --c5: #5c940d;
+  --c6: #7048e8;
+  --c7: #d9480f;
+  --c8: #089fc8;
+  --c9: #9c36b5;
+  --c10: #2f9e44;
+  --c11: #e64980;
 }

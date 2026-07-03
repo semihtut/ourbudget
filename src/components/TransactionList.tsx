@@ -26,7 +26,7 @@ export function TransactionRow({
   return (
     <li className="group flex items-center gap-3 py-2.5">
       <span
-        className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-[6px] border border-line bg-surface text-base"
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-bg text-base"
         aria-hidden
       >
         {category?.emoji ?? '🏷️'}
@@ -37,11 +37,11 @@ export function TransactionRow({
         className="min-w-0 flex-1 text-left"
       >
         <span className="flex items-center gap-1.5">
-          <span className="truncate text-sm text-ink">
+          <span className="truncate text-sm font-bold text-ink">
             {category?.label ?? 'Unknown'}
           </span>
           {expense.recurring && (
-            <span className="rounded-[4px] bg-accent-soft px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-accent">
+            <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-accent-deep">
               recurring
             </span>
           )}
@@ -58,7 +58,7 @@ export function TransactionRow({
           </span>
         )}
       </button>
-      <span className="shrink-0 text-sm text-ink tnum">
+      <span className="shrink-0 text-sm font-bold text-ink tnum">
         {formatEur(expense.amountCents)}
       </span>
       <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
@@ -120,14 +120,15 @@ export function TransactionList({
           .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
         return (
           <div key={day}>
-            <div className="mb-1 flex items-center gap-3">
-              <span className="lbl">{format(parseISO(day), 'EEE, d MMM')}</span>
-              <span className="h-px flex-1 bg-line" aria-hidden />
-              <span className="text-xs text-faint tnum">
+            <div className="mb-1 flex items-baseline justify-between px-1">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-faint">
+                {format(parseISO(day), 'EEE, d MMM')}
+              </span>
+              <span className="text-xs font-bold text-faint tnum">
                 {formatEur(sumCents(dayRows))}
               </span>
             </div>
-            <ul className="divide-y divide-line-row">
+            <ul className="card divide-y divide-line-row px-4">
               {dayRows.map((expense) => (
                 <TransactionRow
                   key={expense.id}

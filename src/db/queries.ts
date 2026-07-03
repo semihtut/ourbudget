@@ -216,7 +216,7 @@ export interface BreakdownSlice {
   isOther: boolean;
 }
 
-const OTHER_COLOR = '#AFA68E'; // warm neutral for the aggregated bucket
+const OTHER_COLOR = '#B9B4CE'; // soft lavender-gray for the aggregated bucket
 
 // Top-N categories by amount + a single aggregated "Other" bucket.
 export const breakdownTopNPlusOther = (
