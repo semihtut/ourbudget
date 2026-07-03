@@ -116,21 +116,29 @@ Transportation (variable), Groceries (variable). Let the user add custom ones.
 
 ## Design system (`src/styles/tokens.css`)
 
-Nordic, calm, paper-light. Spend the personality on the hero total and charts;
-keep everything else quiet.
+Warm editorial print — a typeset account book. Warm paper, dark ink, hairline
+rules, one deep rust accent. Personality lives in the big Fraunces numerals and
+the charts; chrome stays quiet. Sections are open layouts divided by hairline
+rules (`LABEL ————`), not floating cards; panels are used sparingly.
 
 ```
---bg:#FBFBF9  --surface:#FFFFFF  --ink:#1C2B2D  --muted:#6B7773  --line:#E7E5DE
---accent:#2F6F5E (pine)  --accent-soft:#E8EDE9
---me:#2F6F5E  --partner:#A65A3A  --joint:#6B7B7E
-radius: 16px   shadow: 0 1px 2px rgba(28,43,45,.04), 0 8px 28px rgba(28,43,45,.05)
+--bg:#F4EFE3  --surface:#FCFAF3  --ink:#221D14  --muted:#5C5648  --faint:#8B8272
+--line:#DED5C2  --accent:#9C3F14 (rust)  --accent-soft:#F3E4D6
+--pos:#0E7E60 (savings/less)  --neg:#B3261E (overspend/more)
+radius: 8px (print-like)   shadow: near-none — borders do the separating
 ```
 
-Categorical palette: `#2F6F5E #C2703D #D9A441 #5E9BC2 #6E7CA8 #A65A3A #C98A5E
-#7A8B5A #5B8C7B #88B0A0 #8A6FA8 #C25E7A`.
+Categorical palette (fixed order, CVD + 3:1 contrast validated):
+`#C0521E #0E7E60 #C27C00 #3C72C6 #A0489C #6C8B21 #C64B70 #0E86A0 #A56A21
+#6461D6 #4E8A3A #B0475A`. "Other" bucket: `#AFA68E`.
 
-Type: **Fraunces** (display: the household name + the big monthly total only)
-+ **Inter** (everything, with `font-variant-numeric: tabular-nums` on all money).
+Type: **Fraunces** (display: wordmark + hero numerals + screen titles; italic
+for the month name and insight lines) + **Inter** (everything else).
+`tabular-nums` on aligned money columns only — hero numerals stay proportional.
+
+Charts: category breakdown is a stacked spine bar (2px paper gaps) + ranked
+list; the trend chart uses emphasis (current month = rust, seasonal peak = ink,
+context = recessive) with values labeled selectively, never on every bar.
 
 ## Conventions
 

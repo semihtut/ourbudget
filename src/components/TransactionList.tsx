@@ -24,9 +24,9 @@ export function TransactionRow({
   showDate = false,
 }: TransactionRowProps) {
   return (
-    <li className="group flex items-center gap-3 py-1">
+    <li className="group flex items-center gap-3 py-2.5">
       <span
-        className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-[10px] border border-line-soft bg-surface text-base"
+        className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-[6px] border border-line bg-surface text-base"
         aria-hidden
       >
         {category?.emoji ?? '🏷️'}
@@ -41,7 +41,7 @@ export function TransactionRow({
             {category?.label ?? 'Unknown'}
           </span>
           {expense.recurring && (
-            <span className="rounded-md bg-accent-soft px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-accent">
+            <span className="rounded-[4px] bg-accent-soft px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-accent">
               recurring
             </span>
           )}
@@ -120,13 +120,14 @@ export function TransactionList({
           .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
         return (
           <div key={day}>
-            <div className="mb-2 flex items-baseline justify-between">
+            <div className="mb-1 flex items-center gap-3">
               <span className="lbl">{format(parseISO(day), 'EEE, d MMM')}</span>
+              <span className="h-px flex-1 bg-line" aria-hidden />
               <span className="text-xs text-faint tnum">
                 {formatEur(sumCents(dayRows))}
               </span>
             </div>
-            <ul className="flex flex-col gap-2">
+            <ul className="divide-y divide-line-row">
               {dayRows.map((expense) => (
                 <TransactionRow
                   key={expense.id}

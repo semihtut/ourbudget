@@ -29,7 +29,7 @@ export function Modal({ title, onClose, children, bare = false }: ModalProps) {
 
   return (
     <div
-      className="animate-fade fixed inset-0 z-50 flex items-end justify-center bg-ink/30 p-0 sm:items-center sm:p-4"
+      className="animate-fade fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-4"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -40,7 +40,7 @@ export function Modal({ title, onClose, children, bare = false }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="animate-sheet max-h-[92vh] w-full overflow-y-auto rounded-t-3xl bg-surface text-ink shadow-sheet outline-none sm:max-w-md sm:rounded-3xl sm:shadow-card"
+        className="animate-sheet max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-surface text-ink shadow-sheet outline-none sm:max-w-md sm:rounded-xl sm:border sm:border-line sm:shadow-card"
       >
         {bare ? (
           <div className="px-6 pb-7 pt-4">

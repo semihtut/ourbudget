@@ -126,9 +126,11 @@ export default function App() {
   return (
     <div className="min-h-dvh pb-24 md:pb-10">
       {/* Top bar — wordmark, month switcher, desktop nav + add button. */}
-      <header className="sticky top-0 z-40 border-b border-line-soft bg-bg/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
-          <h1 className="font-display truncate text-lg font-semibold text-ink">{wordmark}</h1>
+          <h1 className="font-display max-w-[45vw] truncate text-lg font-semibold italic text-ink md:max-w-[200px] md:shrink-0">
+            {wordmark}
+          </h1>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
             {DESKTOP_TABS.map(({ key, label, Icon }) => {
@@ -165,7 +167,7 @@ export default function App() {
             <button
               type="button"
               onClick={openAdd}
-              className="hidden items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white transition-transform hover:scale-[1.03] active:scale-95 md:flex"
+              className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white transition-transform hover:scale-[1.03] active:scale-95 md:flex"
             >
               <PlusIcon className="h-4 w-4" /> Add expense
             </button>

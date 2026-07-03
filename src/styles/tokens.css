@@ -1,43 +1,46 @@
-/* Design tokens — Nordic, calm, paper-light (per design handoff).
-   Personality lives on the hero total and charts; everything else stays quiet. */
+/* Design tokens — "warm editorial print" (Fable edition).
+   A typeset account book: warm paper, dark ink, hairline rules, one deep rust
+   accent. Personality lives in the big Fraunces numerals and the charts;
+   chrome stays quiet. Categorical palette validated (CVD + contrast) against
+   the surface color. */
 :root {
-  --bg: #fbfbf9; /* app paper */
-  --surface: #ffffff; /* cards */
-  --ink: #1c2b2d; /* primary text */
-  --muted: #6b7773; /* secondary text */
-  --faint: #9b988f; /* tertiary / placeholders */
-  --line: #e7e5de; /* hairlines */
-  --line-soft: #eceae3; /* inner dividers */
-  --line-row: #f0eee8; /* list-row dividers */
+  --bg: #f4efe3; /* warm paper */
+  --surface: #fcfaf3; /* raised paper / panels */
+  --ink: #221d14; /* primary text */
+  --muted: #5c5648; /* secondary text */
+  --faint: #8b8272; /* tertiary / placeholders */
+  --line: #ded5c2; /* hairlines */
+  --line-soft: #e8e1d1; /* inner dividers */
+  --line-row: #efe9db; /* list-row dividers */
 
-  --accent: #2f6f5e; /* pine — primary actions, current month */
-  --accent-soft: #e8ede9; /* tints, recurring badge bg */
-  --track: #f0eee7; /* progress-bar track */
+  --accent: #9c3f14; /* deep rust — actions, links, current month */
+  --accent-bright: #c0521e; /* chart slot 1 / hover states */
+  --accent-soft: #f3e4d6; /* tints, recurring badge bg */
+  --track: #e8e1d1; /* progress-bar track */
 
-  --radius: 16px;
-  --radius-lg: 20px;
-  --shadow: 0 1px 2px rgba(28, 43, 45, 0.04), 0 18px 48px rgba(28, 43, 45, 0.1);
-  --shadow-sheet: 0 1px 2px rgba(28, 43, 45, 0.04), 0 -2px 40px rgba(28, 43, 45, 0.12);
+  --pos: #0e7e60; /* savings / spent less */
+  --neg: #b3261e; /* overspend / spent more */
+  --chart-de: #ddd3bc; /* de-emphasised chart marks */
 
-  /* hero / page background washes */
-  --wash-hero: radial-gradient(100% 56% at 50% 0%, #d9eae0 0%, transparent 60%),
-    linear-gradient(180deg, #e9f1ec 0%, #f4f4ee 34%, #fbfbf9 62%);
-  --wash-secondary: linear-gradient(180deg, #f5f3ed 0%, #fbfbf9 28%);
-  --wash-sheet: #edebe4;
+  --radius: 8px; /* sharper, print-like */
+  --radius-lg: 12px;
+  --shadow: 0 1px 0 rgba(34, 29, 20, 0.05);
+  --shadow-sheet: 0 -8px 40px rgba(34, 29, 20, 0.16);
 }
 
-/* Categorical palette (assigned per Category.color). */
+/* Categorical palette (assigned per Category.color, fixed order, never cycled).
+   Validated: lightness band, chroma floor, adjacent-pair CVD, 3:1 contrast. */
 :root {
-  --c0: #2f6f5e;
-  --c1: #c2703d;
-  --c2: #d9a441;
-  --c3: #5e9bc2;
-  --c4: #6e7ca8;
-  --c5: #a65a3a;
-  --c6: #c98a5e;
-  --c7: #7a8b5a;
-  --c8: #5b8c7b;
-  --c9: #88b0a0;
-  --c10: #8a6fa8;
-  --c11: #c25e7a;
+  --c0: #c0521e;
+  --c1: #0e7e60;
+  --c2: #c27c00;
+  --c3: #3c72c6;
+  --c4: #a0489c;
+  --c5: #6c8b21;
+  --c6: #c64b70;
+  --c7: #0e86a0;
+  --c8: #a56a21;
+  --c9: #6461d6;
+  --c10: #4e8a3a;
+  --c11: #b0475a;
 }

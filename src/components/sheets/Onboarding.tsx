@@ -27,7 +27,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
     // No onClose path — onboarding is mandatory on first run.
     <Modal title="Welcome" onClose={() => {}} bare>
       <div className="flex flex-col items-center text-center">
-        <div className="grid h-14 w-14 place-items-center rounded-2xl bg-accent text-2xl text-white shadow-card">
+        <div className="grid h-14 w-14 place-items-center rounded-lg bg-accent font-display text-2xl italic text-white shadow-card">
           €
         </div>
         <h1 className="font-display mt-5 text-2xl font-semibold leading-snug text-ink">
@@ -51,7 +51,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
             }}
             placeholder="e.g. Ada & Kerem"
             autoFocus
-            className="w-full rounded-xl border border-line bg-bg px-4 py-3 text-sm text-ink outline-none focus:border-accent placeholder:text-faint"
+            className="w-full rounded-lg border border-line bg-bg px-4 py-3 text-sm text-ink outline-none focus:border-accent placeholder:text-faint"
           />
         </div>
 
@@ -59,7 +59,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
           type="button"
           onClick={handleStart}
           disabled={saving}
-          className="mt-5 w-full rounded-xl bg-accent py-3.5 text-sm font-semibold text-white transition-transform active:scale-[.99] disabled:opacity-60"
+          className="mt-5 w-full rounded-lg bg-accent py-3.5 text-sm font-semibold text-white transition-transform active:scale-[.99] disabled:opacity-60"
         >
           Get started
         </button>

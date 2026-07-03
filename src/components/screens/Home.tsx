@@ -1,8 +1,8 @@
-import { CategoryDonut } from '../charts/CategoryDonut';
+import { CategorySpine } from '../charts/CategorySpine';
 import { MonthlyTrend } from '../charts/MonthlyTrend';
 import { IncomeSavings } from '../IncomeSavings';
 import { TransactionRow } from '../TransactionList';
-import { formatEur, formatEurWhole } from '../../lib/money';
+import { formatEurWhole } from '../../lib/money';
 import { monthLabel, monthShortLabel, shiftMonth } from '../../lib/month';
 import { sumCents } from '../../db/queries';
 import type { MonthTotal } from '../../db/queries';
@@ -29,6 +29,23 @@ function insight(month: MonthKey, total: number, prev: number | null, count: num
   return `${formatEurWhole(Math.abs(delta))} ${dir} than ${monthShortLabel(shiftMonth(month, -1))} · ${txt}`;
 }
 
+// A print-style section header: LABEL ————————————
+function SectionHeader({
+  label,
+  action,
+}: {
+  label: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="mb-4 flex items-center gap-3">
+      <span className="lbl">{label}</span>
+      <span className="h-px flex-1 bg-line" aria-hidden />
+      {action}
+    </div>
+  );
+}
+
 export function Home({
   month,
   rows,
@@ -45,55 +62,62 @@ export function Home({
     .slice(0, 3);
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Hero */}
-      <section className="rounded-card p-6 text-center" style={{ background: 'var(--wash-hero)' }}>
-        <p className="lbl">Spent in {monthLabel(month).split(' ')[0]}</p>
-        <p className="mt-1 font-display text-6xl font-semibold leading-none tracking-tight text-ink tnum">
+    <div className="flex flex-col gap-8">
+      {/* Hero — typeset like a ledger total. */}
+      <section className="pt-2 text-center">
+        <div className="flex items-center gap-4">
+          <span className="h-px flex-1 bg-line" aria-hidden />
+          <p className="lbl">Spent in {monthLabel(month).split(' ')[0]}</p>
+          <span className="h-px flex-1 bg-line" aria-hidden />
+        </div>
+        <p className="mt-4 font-display text-[64px] font-semibold leading-none tracking-tight text-ink md:text-7xl">
           {formatEurWhole(total)}
         </p>
-        <p className="mt-2.5 text-sm text-muted">
+        <p className="mt-3 font-display italic text-muted">
           {insight(month, total, prevTotalCents, rows.length)}
         </p>
+        <div className="rule-double mx-auto mt-5 w-24" aria-hidden />
       </section>
 
       {/* Income & savings */}
       <IncomeSavings month={month} spentCents={total} />
 
       {/* Where it went */}
-      <section className="card p-5">
-        <p className="lbl mb-4">Where it went</p>
-        <CategoryDonut rows={rows} categories={categories} center="total" legendValue="percent" />
+      <section>
+        <SectionHeader label="Where it went" />
+        <CategorySpine rows={rows} categories={categories} />
       </section>
 
-      {/* Last 6 months mini-trend */}
+      {/* Last 6 months */}
       {trendSeries.some((t) => t.amountCents > 0) && (
-        <section className="card p-5">
-          <p className="lbl mb-4">Last 6 months</p>
-          <MonthlyTrend series={trendSeries} currentMonth={month} height={120} />
+        <section>
+          <SectionHeader label="Last 6 months" />
+          <MonthlyTrend series={trendSeries} currentMonth={month} height={110} />
         </section>
       )}
 
       {/* Recent */}
-      <section className="card p-5">
-        <div className="mb-2 flex items-center justify-between">
-          <p className="lbl">Recent</p>
-          {rows.length > 0 && (
-            <button
-              type="button"
-              onClick={onViewAll}
-              className="text-xs font-medium text-accent hover:underline"
-            >
-              View all {rows.length} ›
-            </button>
-          )}
-        </div>
+      <section>
+        <SectionHeader
+          label="Recent"
+          action={
+            rows.length > 0 ? (
+              <button
+                type="button"
+                onClick={onViewAll}
+                className="shrink-0 text-xs font-medium text-accent hover:underline"
+              >
+                View all {rows.length} ›
+              </button>
+            ) : undefined
+          }
+        />
         {recent.length === 0 ? (
           <p className="py-6 text-center text-sm text-muted">
             No transactions yet — tap + to add one.
           </p>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="divide-y divide-line-row">
             {recent.map((expense) => (
               <TransactionRow
                 key={expense.id}
@@ -106,7 +130,6 @@ export function Home({
             ))}
           </ul>
         )}
-        <p className="sr-only">{formatEur(total)} total</p>
       </section>
     </div>
   );

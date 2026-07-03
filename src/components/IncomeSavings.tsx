@@ -111,13 +111,13 @@ export function IncomeSavings({ month, spentCents }: IncomeSavingsProps) {
             />
           </div>
 
-          <div className="flex items-baseline justify-between">
+          <div className="flex items-baseline justify-between border-t-[3px] border-double border-line pt-3">
             <span className="text-sm font-medium text-ink">
               {overspent ? 'Over budget' : 'Can set aside'}
             </span>
             <span
-              className={`font-display text-2xl font-semibold tnum ${
-                overspent ? 'text-up' : 'text-accent'
+              className={`font-display text-2xl font-semibold ${
+                overspent ? 'text-up' : 'text-down'
               }`}
             >
               {overspent ? '−' : ''}

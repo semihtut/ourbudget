@@ -52,6 +52,19 @@ class LedgerDB extends Dexie {
       settings: 'key',
       incomes: 'month',
     });
+    // v4 — Fable redesign: remap stored category colors onto the new
+    // categorical palette (colors live in the DB, so a token change alone
+    // would leave old hues behind). Assignment stays index-stable.
+    this.version(4).upgrade(async (tx) => {
+      const categories = await tx.table('categories').toArray();
+      await Promise.all(
+        categories.map((category, index) =>
+          tx
+            .table('categories')
+            .update(category.id, { color: PALETTE[index % PALETTE.length] }),
+        ),
+      );
+    });
   }
 }
 

@@ -126,7 +126,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
                   type="button"
                   onClick={() => setCategoryId(category.id)}
                   aria-pressed={selected}
-                  className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm transition-colors ${
+                  className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors ${
                     selected
                       ? 'border-accent bg-accent-soft font-medium text-accent'
                       : 'border-line bg-bg text-muted hover:border-accent'
@@ -140,14 +140,14 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
             <button
               type="button"
               onClick={() => setAdding((v) => !v)}
-              className="rounded-xl border border-dashed border-line px-3 py-2 text-sm text-muted transition-colors hover:border-accent hover:text-accent"
+              className="rounded-lg border border-dashed border-line px-3 py-2 text-sm text-muted transition-colors hover:border-accent hover:text-accent"
             >
               ＋ New
             </button>
           </div>
 
           {adding && (
-            <div className="mt-3 flex flex-col gap-2 rounded-xl border border-line bg-bg p-3">
+            <div className="mt-3 flex flex-col gap-2 rounded-lg border border-line bg-bg p-3">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -234,7 +234,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
         <button
           type="submit"
           disabled={saving}
-          className="mt-5 rounded-2xl bg-accent py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.01] active:scale-95 disabled:opacity-60"
+          className="mt-5 rounded-lg bg-accent py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.01] active:scale-95 disabled:opacity-60"
         >
           {existing ? 'Save changes' : 'Save expense'}
         </button>
@@ -242,7 +242,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
           <button
             type="button"
             onClick={handleDelete}
-            className="mt-2 rounded-2xl py-2.5 text-sm font-medium text-up transition-colors hover:bg-up/10"
+            className="mt-2 rounded-lg py-2.5 text-sm font-medium text-up transition-colors hover:bg-up/10"
           >
             Delete expense
           </button>
@@ -250,7 +250,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
           <button
             type="button"
             onClick={onClose}
-            className="mt-2 rounded-2xl py-2.5 text-sm font-medium text-muted transition-colors hover:bg-bg"
+            className="mt-2 rounded-lg py-2.5 text-sm font-medium text-muted transition-colors hover:bg-bg"
           >
             Cancel
           </button>

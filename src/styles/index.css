@@ -19,12 +19,14 @@
     min-height: 100dvh;
   }
 
+  /* Tabular figures for columns of money that must align (rows, axes).
+     Big display numerals stay proportional — see .figure. */
   .tnum {
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum' 1;
   }
 
-  /* Fraunces only on the wordmark, big numbers, and screen titles. */
+  /* Fraunces on the wordmark, hero numerals, and screen titles only. */
   .font-display {
     font-family: 'Fraunces', Georgia, serif;
   }
@@ -35,22 +37,41 @@
     border-radius: 4px;
   }
 
-  /* Section/eyebrow label used throughout. */
+  /* Small-caps eyebrow used for every section header. */
   .lbl {
     font-size: 11px;
     font-weight: 600;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.8px;
     text-transform: uppercase;
     color: var(--faint);
   }
 }
 
 @layer utilities {
+  /* Quiet paper panel — hairline border, near-zero shadow. */
   .card {
     background: var(--surface);
-    border: 1px solid var(--line-soft);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+  }
+
+  /* Section header with a trailing hairline rule: LABEL ———————— */
+  .rule-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .rule-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* Classic ledger double rule (above totals). */
+  .rule-double {
+    border-top: 3px double var(--line);
   }
 
   @keyframes ledger-fade {

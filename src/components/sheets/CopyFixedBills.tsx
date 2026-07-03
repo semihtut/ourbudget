@@ -48,7 +48,7 @@ export function CopyFixedBills({ month, categoryMap, onClose }: CopyFixedBillsPr
           {monthLabel(month)}. Duplicates are skipped.
         </p>
 
-        <ul className="mt-4 max-h-64 divide-y divide-line-row overflow-y-auto rounded-xl border border-line-soft">
+        <ul className="mt-4 max-h-64 divide-y divide-line-row overflow-y-auto rounded-lg border border-line">
           {bills.map((bill) => {
             const category = categoryMap.get(bill.categoryId);
             return (
@@ -79,14 +79,14 @@ export function CopyFixedBills({ month, categoryMap, onClose }: CopyFixedBillsPr
           type="button"
           onClick={handleCopy}
           disabled={busy || bills.length === 0}
-          className="mt-5 rounded-2xl bg-accent py-3.5 text-sm font-semibold text-white transition-transform active:scale-[.99] disabled:opacity-60"
+          className="mt-5 rounded-lg bg-accent py-3.5 text-sm font-semibold text-white transition-transform active:scale-[.99] disabled:opacity-60"
         >
           Copy {bills.length} {bills.length === 1 ? 'bill' : 'bills'}
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="mt-2 rounded-2xl py-2.5 text-sm font-medium text-muted transition-colors hover:bg-bg"
+          className="mt-2 rounded-lg py-2.5 text-sm font-medium text-muted transition-colors hover:bg-bg"
         >
           Not now
         </button>

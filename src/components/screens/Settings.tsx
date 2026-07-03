@@ -55,7 +55,7 @@ export function Settings({
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="font-display text-2xl font-semibold text-ink">Settings</h2>
+      <h2 className="font-display text-3xl font-semibold text-ink">Settings</h2>
 
       <Group label="Household">
         <label className="flex items-center justify-between gap-3 px-4 py-3.5">
@@ -135,8 +135,8 @@ export function Settings({
         </div>
         <div className="flex items-center justify-between px-4 py-3.5">
           <span className="text-sm text-ink">Offline</span>
-          <span className="flex items-center gap-1.5 text-sm text-accent">
-            <span className="h-[7px] w-[7px] rounded-full bg-accent" />
+          <span className="flex items-center gap-1.5 text-sm text-down">
+            <span className="h-[7px] w-[7px] rounded-full bg-down" />
             Ready
           </span>
         </div>

@@ -44,16 +44,16 @@ export function Activity({ rows, categoryMap, onEdit, onDelete }: ActivityProps)
   const chip = (active: boolean) =>
     `shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs transition-colors ${
       active
-        ? 'border-accent bg-accent text-white'
-        : 'border-line bg-surface text-muted hover:border-accent'
+        ? 'border-ink bg-ink text-surface'
+        : 'border-line bg-surface text-muted hover:border-accent hover:text-accent'
     }`;
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="font-display text-2xl font-semibold text-ink">Activity</h2>
+      <h2 className="font-display text-3xl font-semibold text-ink">Activity</h2>
 
       {/* Search */}
-      <div className="flex items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5">
+      <div className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2.5">
         <SearchIcon className="h-4 w-4 text-faint" />
         <input
           type="search"

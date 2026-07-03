@@ -51,7 +51,7 @@ export function Categories({ categories, onBack }: CategoriesProps) {
         <ul className="card divide-y divide-line-row overflow-hidden p-0">
           {list.map((category) => (
             <li key={category.id} className="group flex items-center gap-3 px-3.5 py-3">
-              <span className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-[9px] border border-line-soft bg-bg text-sm">
+              <span className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-[6px] border border-line bg-bg text-sm">
                 {category.emoji}
               </span>
               <span className="flex-1 truncate text-sm text-ink">{category.label}</span>
@@ -85,7 +85,7 @@ export function Categories({ categories, onBack }: CategoriesProps) {
         >
           <ChevronLeftIcon className="h-4 w-4" />
         </button>
-        <h2 className="font-display text-2xl font-semibold text-ink">Categories</h2>
+        <h2 className="font-display text-3xl font-semibold text-ink">Categories</h2>
       </div>
 
       {renderGroup('Fixed', fixed)}
