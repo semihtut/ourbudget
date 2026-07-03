@@ -13,18 +13,24 @@ interface ModalProps {
 export function Modal({ title, onClose, children, bare = false }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // Focus + scroll-lock exactly once on mount. This must NOT re-run when the
+  // parent re-renders with a new onClose identity — re-focusing the panel
+  // would steal focus from inputs mid-typing.
+  useEffect(() => {
+    panelRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKey);
-    panelRef.current?.focus();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = previousOverflow;
-    };
+    return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
   return (

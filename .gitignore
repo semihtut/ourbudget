@@ -15,3 +15,4 @@ npm-debug.log*
 
 # local Claude settings (machine-specific)
 .claude/settings.local.json
+Gemini_Generated_Image_*.png

@@ -11,11 +11,11 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png'],
       manifest: {
-        name: 'Household Ledger',
-        short_name: 'Ledger',
+        name: 'ourbudget',
+        short_name: 'ourbudget',
         description: 'Track shared monthly expenses, offline.',
-        theme_color: '#2F6F5E',
-        background_color: '#FBFBF9',
+        theme_color: '#6C5CE7',
+        background_color: '#F7F6FD',
         display: 'standalone',
         start_url: '/',
         scope: '/',
@@ -31,9 +31,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,woff2,png,svg,ico}'],
-        // Cache Google Fonts at runtime so Fraunces/Inter survive offline after
-        // the first load; the app degrades to system fonts if they never cached.
+        globPatterns: ['**/*.{js,css,html,woff2,png,webp,svg,ico}'],
+        // Cache Google Fonts at runtime so Nunito survives offline after the
+        // first load; the app degrades to system fonts if it never cached.
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
