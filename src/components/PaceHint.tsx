@@ -1,31 +1,36 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 
-import { incomeForMonth } from '../db/queries';
+import { incomeForMonth, sumCents } from '../db/queries';
 import { formatEurWhole } from '../lib/money';
 import { currentMonthKey, dayOfMonthToday, daysInMonth } from '../lib/month';
-import type { MonthKey } from '../types';
+import type { Expense, MonthKey } from '../types';
 
 interface PaceHintProps {
   month: MonthKey;
-  spentCents: number;
+  rows: Expense[];
 }
 
 // Skip the first couple of days — a single early expense projects nonsense.
 const MIN_DAYS_FOR_SIGNAL = 3;
 
-// "On pace for ~€2,300 this month" — a linear month-end projection, only shown
-// for the live calendar month. Colored against income when income is set.
-export function PaceHint({ month, spentCents }: PaceHintProps) {
+// "On pace for ~€2,300 this month" — a month-end projection, only shown for
+// the live calendar month. Recurring bills land once (usually on day 1), so
+// they are counted as-is; only the variable spending is extrapolated per day.
+// Colored against income when income is set.
+export function PaceHint({ month, rows }: PaceHintProps) {
   const incomeCents = useLiveQuery(() => incomeForMonth(month), [month]);
 
   if (month !== currentMonthKey()) return null;
   if (incomeCents === undefined) return null;
 
+  const spentCents = sumCents(rows);
   const today = dayOfMonthToday();
   const totalDays = daysInMonth(month);
   if (today < MIN_DAYS_FOR_SIGNAL || today >= totalDays || spentCents <= 0) return null;
 
-  const projectedCents = Math.round((spentCents / today) * totalDays);
+  const variableCents = sumCents(rows.filter((row) => !row.recurring));
+  const projectedCents =
+    spentCents + Math.round((variableCents / today) * (totalDays - today));
   const hasIncome = incomeCents > 0;
   const overIncome = hasIncome && projectedCents > incomeCents;
 

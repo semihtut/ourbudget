@@ -23,8 +23,9 @@ interface CompareProps {
 // crowd the report — the story lives in the categories that really moved.
 const UNCHANGED_THRESHOLD_CENTS = 100;
 
-// "▲ €120 more" / "▼ €85 less" / "same" as a soft colored pill.
-function DeltaPill({ deltaCents }: { deltaCents: number }) {
+// "▲ €120 more" / "▼ €85 less" / "same" as a soft colored pill. For spending,
+// up is bad (red); pass upIsGood for rows like income where growth is good.
+function DeltaPill({ deltaCents, upIsGood = false }: { deltaCents: number; upIsGood?: boolean }) {
   if (Math.abs(deltaCents) <= UNCHANGED_THRESHOLD_CENTS) {
     return (
       <span className="inline-block shrink-0 rounded-full bg-track px-2.5 py-0.5 text-xs font-bold text-muted">
@@ -33,10 +34,11 @@ function DeltaPill({ deltaCents }: { deltaCents: number }) {
     );
   }
   const more = deltaCents > 0;
+  const bad = upIsGood ? !more : more;
   return (
     <span
       className={`inline-block shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold tnum ${
-        more ? 'bg-up-soft text-up' : 'bg-down-soft text-down'
+        bad ? 'bg-up-soft text-up' : 'bg-down-soft text-down'
       }`}
     >
       {more ? '▲' : '▼'} {formatEurWhole(Math.abs(deltaCents))}
@@ -138,14 +140,14 @@ export function Compare({ month, categoryMap, onBack }: CompareProps) {
     </select>
   );
 
-  const sideBySide = (label: string, a: number, b: number) => (
+  const sideBySide = (label: string, a: number, b: number, upIsGood = false) => (
     <div className="flex items-center justify-between gap-3 py-2.5">
       <span className="text-sm text-ink">{label}</span>
       <span className="flex items-center gap-2">
         <span className="text-sm text-faint tnum">{formatEur(a)}</span>
         <span className="text-xs text-faint">→</span>
         <span className="text-sm font-bold text-ink tnum">{formatEur(b)}</span>
-        <DeltaPill deltaCents={b - a} />
+        <DeltaPill deltaCents={b - a} upIsGood={upIsGood} />
       </span>
     </div>
   );
@@ -262,7 +264,7 @@ export function Compare({ month, categoryMap, onBack }: CompareProps) {
             <section className="card p-5">
               <p className="lbl mb-2">Income &amp; set aside</p>
               <div className="divide-y divide-line-row">
-                {sideBySide('Income', incomeA, incomeB)}
+                {sideBySide('Income', incomeA, incomeB, true)}
                 <div className="flex items-center justify-between gap-3 py-2.5">
                   <span className="text-sm text-ink">Left over</span>
                   <span className="flex items-center gap-2">

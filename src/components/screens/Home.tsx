@@ -89,7 +89,7 @@ export function Home({
             {rows.length} transaction{rows.length === 1 ? '' : 's'}
           </span>
         </div>
-        <PaceHint month={month} spentCents={total} />
+        <PaceHint month={month} rows={rows} />
       </section>
 
       {/* Left to spend */}
