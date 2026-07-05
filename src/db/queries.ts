@@ -185,6 +185,171 @@ export const exportAllData = async (): Promise<string> => {
   );
 };
 
+// ---- Import (restore a backup / device-to-device sync) ----------------------
+
+export type ImportMode = 'replace' | 'merge';
+
+// A sanitized, ready-to-write backup payload.
+export interface Backup {
+  expenses: Expense[];
+  categories: Category[];
+  incomes: Income[];
+  settings?: Partial<Settings>;
+}
+
+export interface ImportResult {
+  expensesAdded: number;
+  duplicatesSkipped: number;
+  categoriesAdded: number;
+  incomesAdded: number;
+}
+
+const isValidDateString = (value: unknown): value is string =>
+  typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+
+const isValidHexColor = (value: unknown): value is string =>
+  typeof value === 'string' && /^#[0-9a-fA-F]{6}$/.test(value);
+
+// Parse + sanitize an exported JSON file. Throws a readable message when the
+// file is not an ourbudget backup. Rows with broken shapes are dropped; ids
+// and unknown fields (e.g. the legacy `payer`) are stripped.
+export const parseBackup = (json: string): Backup => {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(json);
+  } catch {
+    throw new Error('Not a valid JSON file.');
+  }
+  const data = raw as Record<string, unknown>;
+  if (!data || data.app !== 'ourbudget' || !Array.isArray(data.expenses)) {
+    throw new Error('Not an ourbudget backup file.');
+  }
+
+  const expenses: Expense[] = [];
+  for (const item of data.expenses as unknown[]) {
+    const row = item as Record<string, unknown>;
+    if (!isValidDateString(row.date)) continue;
+    if (typeof row.categoryId !== 'string') continue;
+    if (typeof row.amountCents !== 'number' || !Number.isFinite(row.amountCents)) continue;
+    expenses.push({
+      date: row.date,
+      month: monthKeyOfDateString(row.date),
+      categoryId: row.categoryId,
+      amountCents: Math.round(row.amountCents),
+      note: typeof row.note === 'string' && row.note.trim() ? row.note.trim() : undefined,
+      recurring: row.recurring === true,
+    });
+  }
+
+  const categories: Category[] = [];
+  if (Array.isArray(data.categories)) {
+    for (const item of data.categories as unknown[]) {
+      const row = item as Record<string, unknown>;
+      if (typeof row.id !== 'string' || typeof row.label !== 'string') continue;
+      categories.push({
+        id: row.id,
+        label: row.label,
+        emoji: typeof row.emoji === 'string' && row.emoji ? row.emoji : '🏷️',
+        color: isValidHexColor(row.color) ? row.color : '',
+        kind: row.kind === 'fixed' ? 'fixed' : 'variable',
+      });
+    }
+  }
+
+  const incomes: Income[] = [];
+  if (Array.isArray(data.incomes)) {
+    for (const item of data.incomes as unknown[]) {
+      const row = item as Record<string, unknown>;
+      if (typeof row.month !== 'string' || !/^\d{4}-\d{2}$/.test(row.month)) continue;
+      if (typeof row.amountCents !== 'number' || !Number.isFinite(row.amountCents)) continue;
+      if (row.amountCents <= 0) continue;
+      incomes.push({ month: row.month, amountCents: Math.round(row.amountCents) });
+    }
+  }
+
+  const settings =
+    data.settings && typeof data.settings === 'object'
+      ? (data.settings as Partial<Settings>)
+      : undefined;
+
+  return { expenses, categories, incomes, settings };
+};
+
+// Duplicate detection key: two expenses are "the same" when date, category,
+// amount and note all match. Used so a re-imported backup is a no-op.
+const expenseKey = (expense: Expense): string =>
+  `${expense.date}|${expense.categoryId}|${expense.amountCents}|${expense.note ?? ''}`;
+
+// Apply a parsed backup. 'merge' unions the file into what's on the device
+// (duplicates skipped, local settings kept); 'replace' wipes expense data
+// first and restores the file wholesale.
+export const importBackup = async (
+  backup: Backup,
+  mode: ImportMode,
+): Promise<ImportResult> =>
+  db.transaction('rw', db.expenses, db.categories, db.incomes, db.settings, async () => {
+    const result: ImportResult = {
+      expensesAdded: 0,
+      duplicatesSkipped: 0,
+      categoriesAdded: 0,
+      incomesAdded: 0,
+    };
+
+    if (mode === 'replace') {
+      await Promise.all([db.expenses.clear(), db.categories.clear(), db.incomes.clear()]);
+    }
+
+    // Categories first so every imported expense has a home.
+    const existingCategories = await db.categories.toArray();
+    const knownIds = new Set(existingCategories.map((category) => category.id));
+    let categoryCount = existingCategories.length;
+    for (const category of backup.categories) {
+      if (knownIds.has(category.id)) continue;
+      await db.categories.add({
+        ...category,
+        color: category.color || nextPaletteColor(categoryCount),
+      });
+      knownIds.add(category.id);
+      categoryCount += 1;
+      result.categoriesAdded += 1;
+    }
+
+    const existingExpenses = await db.expenses.toArray();
+    const seenKeys = new Set(existingExpenses.map(expenseKey));
+    for (const expense of backup.expenses) {
+      const key = expenseKey(expense);
+      if (seenKeys.has(key)) {
+        result.duplicatesSkipped += 1;
+        continue;
+      }
+      await db.expenses.add(expense);
+      seenKeys.add(key);
+      result.expensesAdded += 1;
+    }
+
+    const monthsWithIncome = new Set(
+      (await db.incomes.toArray()).map((income) => income.month),
+    );
+    for (const income of backup.incomes) {
+      if (monthsWithIncome.has(income.month)) continue;
+      await db.incomes.put(income);
+      result.incomesAdded += 1;
+    }
+
+    // Replace restores household names too; merge never touches settings.
+    if (mode === 'replace' && backup.settings) {
+      const { householdName, meName, partnerName } = backup.settings;
+      await updateSettings({
+        ...(typeof householdName === 'string' ? { householdName } : {}),
+        ...(typeof meName === 'string' ? { meName } : {}),
+        ...(typeof partnerName === 'string' ? { partnerName } : {}),
+        onboarded: true,
+      });
+    }
+
+    return result;
+  });
+
 // ---- Aggregations / selectors ----------------------------------------------
 
 export const sumCents = (rows: Expense[]): number =>
