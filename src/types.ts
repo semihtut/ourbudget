@@ -21,6 +21,7 @@ export interface Category {
   emoji: string;
   color: string; // hex from the categorical palette
   kind: CategoryKind;
+  budgetCents?: number; // optional monthly cap (mostly for variable categories)
 }
 
 // One income figure per month (salary varies month to month). Keyed by month

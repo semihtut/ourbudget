@@ -1,3 +1,4 @@
+import { BudgetBars } from '../BudgetBars';
 import { CategorySpine } from '../charts/CategorySpine';
 import { MonthlyTrend } from '../charts/MonthlyTrend';
 import { IncomeSavings } from '../IncomeSavings';
@@ -106,6 +107,9 @@ export function Home({
         <p className="lbl mb-4">Where it went</p>
         <CategorySpine rows={rows} categories={categories} />
       </section>
+
+      {/* Category budgets (renders only when a budget is set) */}
+      <BudgetBars rows={rows} categories={categories} />
 
       {/* Last 6 months */}
       {trendSeries.some((t) => t.amountCents > 0) && (

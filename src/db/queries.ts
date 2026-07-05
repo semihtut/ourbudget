@@ -147,6 +147,16 @@ export const addCategory = async (
   return id;
 };
 
+// Set (or clear) a category's monthly budget. amountCents <= 0 clears it.
+export const setCategoryBudget = async (
+  id: string,
+  amountCents: number,
+): Promise<void> => {
+  await db.categories.update(id, {
+    budgetCents: amountCents > 0 ? amountCents : undefined,
+  });
+};
+
 // Delete a category only if no expense references it.
 export const deleteCategory = async (id: string): Promise<boolean> => {
   const inUse = await db.expenses.where('categoryId').equals(id).count();
@@ -280,12 +290,19 @@ export const parseBackup = (json: string): Backup => {
     for (const item of data.categories as unknown[]) {
       const row = item as Record<string, unknown>;
       if (typeof row.id !== 'string' || typeof row.label !== 'string') continue;
+      const budgetCents =
+        typeof row.budgetCents === 'number' &&
+        Number.isFinite(row.budgetCents) &&
+        row.budgetCents > 0
+          ? Math.round(row.budgetCents)
+          : undefined;
       categories.push({
         id: row.id,
         label: row.label,
         emoji: typeof row.emoji === 'string' && row.emoji ? row.emoji : '🏷️',
         color: isValidHexColor(row.color) ? row.color : '',
         kind: row.kind === 'fixed' ? 'fixed' : 'variable',
+        ...(budgetCents ? { budgetCents } : {}),
       });
     }
   }

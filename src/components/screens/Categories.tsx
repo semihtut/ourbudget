@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 import { ChevronLeftIcon, TrashIcon } from '../icons';
-import { addCategory, deleteCategory } from '../../db/queries';
+import { addCategory, deleteCategory, setCategoryBudget } from '../../db/queries';
+import { centsToInput, formatEurWhole, parseAmountToCents } from '../../lib/money';
 import type { Category, CategoryKind } from '../../types';
 
 interface CategoriesProps {
@@ -15,6 +16,8 @@ export function Categories({ categories, onBack }: CategoriesProps) {
   const [label, setLabel] = useState('');
   const [emoji, setEmoji] = useState('🏷️');
   const [kind, setKind] = useState<CategoryKind>('variable');
+  const [budgetEditId, setBudgetEditId] = useState<string | null>(null);
+  const [budgetDraft, setBudgetDraft] = useState('');
 
   const fixed = categories.filter((c) => c.kind === 'fixed');
   const variable = categories.filter((c) => c.kind === 'variable');
@@ -42,6 +45,24 @@ export function Categories({ categories, onBack }: CategoriesProps) {
     );
   };
 
+  const startBudgetEdit = (category: Category) => {
+    setBudgetDraft(category.budgetCents ? centsToInput(category.budgetCents) : '');
+    setBudgetEditId(category.id);
+  };
+
+  // Commit the monthly budget draft; an empty or zero value clears the budget.
+  const commitBudget = async (categoryId: string) => {
+    const cents = parseAmountToCents(budgetDraft);
+    try {
+      await setCategoryBudget(categoryId, cents ?? 0);
+    } catch (error) {
+      console.error('Failed to save budget', error);
+      setNotice('Could not save that budget.');
+    } finally {
+      setBudgetEditId(null);
+    }
+  };
+
   const renderGroup = (title: string, list: Category[]) =>
     list.length === 0 ? null : (
       <div>
@@ -55,6 +76,41 @@ export function Categories({ categories, onBack }: CategoriesProps) {
                 {category.emoji}
               </span>
               <span className="flex-1 truncate text-sm text-ink">{category.label}</span>
+              {budgetEditId === category.id ? (
+                <span className="flex shrink-0 items-center gap-1">
+                  <span className="text-xs font-bold text-faint">€</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    autoFocus
+                    value={budgetDraft}
+                    onChange={(e) => setBudgetDraft(e.target.value)}
+                    onBlur={() => commitBudget(category.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitBudget(category.id);
+                      if (e.key === 'Escape') setBudgetEditId(null);
+                    }}
+                    placeholder="0"
+                    aria-label={`Monthly budget for ${category.label} in euros`}
+                    className="w-20 rounded-lg border-2 border-accent bg-bg px-2 py-1 text-right text-xs font-bold text-ink outline-none tnum placeholder:text-faint"
+                  />
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => startBudgetEdit(category)}
+                  aria-label={`Set monthly budget for ${category.label}`}
+                  className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold transition-colors tnum ${
+                    category.budgetCents
+                      ? 'bg-accent-soft text-accent-deep hover:bg-accent-soft/70'
+                      : 'text-faint hover:bg-bg hover:text-accent-deep'
+                  }`}
+                >
+                  {category.budgetCents
+                    ? `${formatEurWhole(category.budgetCents)}/mo`
+                    : '＋ budget'}
+                </button>
+              )}
               <span
                 className="h-3 w-3 shrink-0 rounded-[4px]"
                 style={{ backgroundColor: category.color }}
