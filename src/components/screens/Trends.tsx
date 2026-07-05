@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 
+import { Compare } from './Compare';
 import { MonthlyTrend } from '../charts/MonthlyTrend';
+import { ChevronRightIcon } from '../icons';
 import { formatEur } from '../../lib/money';
 import { lastMonths, monthLabel, monthShortLabel, shiftMonth } from '../../lib/month';
 import { biggestMovers, expensesForMonths, totalsByMonth } from '../../db/queries';
@@ -14,11 +16,18 @@ interface TrendsProps {
 
 export function Trends({ month, categoryMap }: TrendsProps) {
   const [window, setWindow] = useState<6 | 12>(6);
+  const [comparing, setComparing] = useState(false);
   const months = useMemo(() => lastMonths(month, window), [month, window]);
   const rangeRows = useLiveQuery(
     () => expensesForMonths(months),
     [months.join(',')],
   );
+
+  if (comparing) {
+    return (
+      <Compare month={month} categoryMap={categoryMap} onBack={() => setComparing(false)} />
+    );
+  }
 
   if (rangeRows === undefined) {
     return <div className="h-64" />;
@@ -68,6 +77,21 @@ export function Trends({ month, categoryMap }: TrendsProps) {
           </p>
         )}
       </section>
+
+      {/* Entry to the two-month report. */}
+      <button
+        type="button"
+        onClick={() => setComparing(true)}
+        className="card flex items-center justify-between p-5 text-left transition-colors hover:bg-accent-soft"
+      >
+        <span>
+          <span className="block text-sm font-bold text-ink">Compare two months</span>
+          <span className="mt-0.5 block text-xs text-muted">
+            Pick any two months and see what changed, category by category.
+          </span>
+        </span>
+        <ChevronRightIcon className="h-4 w-4 shrink-0 text-faint" />
+      </button>
 
       {movers.length > 0 && (
         <section className="card p-5">

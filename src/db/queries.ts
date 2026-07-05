@@ -15,6 +15,10 @@ export const expensesForMonths = (months: MonthKey[]): Promise<Expense[]> =>
 
 export const allCategories = (): Promise<Category[]> => db.categories.toArray();
 
+// Every month that has at least one expense, ascending (for month pickers).
+export const monthsWithExpenses = async (): Promise<MonthKey[]> =>
+  (await db.expenses.orderBy('month').uniqueKeys()) as MonthKey[];
+
 export const getSettings = async (): Promise<Settings | undefined> =>
   db.settings.get(SETTINGS_KEY);
 
@@ -438,6 +442,48 @@ export const totalsByMonth = (
     if (map.has(e.month)) map.set(e.month, (map.get(e.month) ?? 0) + e.amountCents);
   }
   return months.map((month) => ({ month, amountCents: map.get(month) ?? 0 }));
+};
+
+// One category's totals in two months being compared (A = earlier pick,
+// B = later pick). Sorted by how much the category moved.
+export interface CategoryComparison {
+  categoryId: string;
+  label: string;
+  emoji: string;
+  kind: Category['kind'];
+  aCents: number;
+  bCents: number;
+  deltaCents: number; // B - A (positive = spent more in B)
+}
+
+export const compareByCategory = (
+  rowsA: Expense[],
+  rowsB: Expense[],
+  categories: Map<string, Category>,
+): CategoryComparison[] => {
+  const totalsA = new Map<string, number>();
+  const totalsB = new Map<string, number>();
+  for (const e of rowsA) totalsA.set(e.categoryId, (totalsA.get(e.categoryId) ?? 0) + e.amountCents);
+  for (const e of rowsB) totalsB.set(e.categoryId, (totalsB.get(e.categoryId) ?? 0) + e.amountCents);
+  const ids = new Set([...totalsA.keys(), ...totalsB.keys()]);
+  const comparisons: CategoryComparison[] = [];
+  for (const id of ids) {
+    const category = categories.get(id);
+    const aCents = totalsA.get(id) ?? 0;
+    const bCents = totalsB.get(id) ?? 0;
+    comparisons.push({
+      categoryId: id,
+      label: category?.label ?? 'Unknown',
+      emoji: category?.emoji ?? '🏷️',
+      kind: category?.kind ?? 'variable',
+      aCents,
+      bCents,
+      deltaCents: bCents - aCents,
+    });
+  }
+  return comparisons.sort(
+    (a, b) => Math.abs(b.deltaCents) - Math.abs(a.deltaCents) || b.bCents - a.bCents,
+  );
 };
 
 export interface Mover {
