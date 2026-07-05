@@ -1,5 +1,5 @@
 // All MonthKey ('YYYY-MM') logic lives here. Never hand-build month strings.
-import { format, parse, addMonths } from 'date-fns';
+import { format, parse, addMonths, getDaysInMonth } from 'date-fns';
 
 import type { MonthKey } from '../types';
 
@@ -33,6 +33,16 @@ export const monthShortLabel = (month: MonthKey): string =>
 
 // Today's date as 'YYYY-MM-DD' (used as the default for a new expense).
 export const todayDateString = (): string => format(new Date(), 'yyyy-MM-dd');
+
+// Number of calendar days in a month, e.g. 31 for '2026-07'.
+export const daysInMonth = (month: MonthKey): number =>
+  getDaysInMonth(parse(month, 'yyyy-MM', new Date()));
+
+// Today's day-of-month (1-based).
+export const dayOfMonthToday = (): number => new Date().getDate();
+
+// The calendar year ('YYYY') a MonthKey belongs to.
+export const yearOfMonth = (month: MonthKey): string => month.slice(0, 4);
 
 // Clamp a 'YYYY-MM-DD' to a given month, preserving day-of-month where possible.
 // Used when copying recurring bills into a new month.

@@ -2,6 +2,7 @@ import { CategorySpine } from '../charts/CategorySpine';
 import { MonthlyTrend } from '../charts/MonthlyTrend';
 import { IncomeSavings } from '../IncomeSavings';
 import { Mascot } from '../Mascot';
+import { PaceHint } from '../PaceHint';
 import { TransactionRow } from '../TransactionList';
 import { formatEurWhole } from '../../lib/money';
 import { monthLabel, monthShortLabel, shiftMonth } from '../../lib/month';
@@ -82,6 +83,7 @@ export function Home({
             {rows.length} transaction{rows.length === 1 ? '' : 's'}
           </span>
         </div>
+        <PaceHint month={month} spentCents={total} />
       </section>
 
       {/* Left to spend */}
