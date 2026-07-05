@@ -83,7 +83,7 @@ export function IncomeSavings({ month, spentCents }: IncomeSavingsProps) {
           <button
             type="button"
             onClick={startEdit}
-            className="shrink-0 rounded-full bg-accent px-4 py-2 text-sm font-bold text-white transition-transform hover:scale-105 active:scale-95"
+            className="shrink-0 rounded-full bg-accent px-4 py-2 text-sm font-bold text-surface transition-transform hover:scale-105 active:scale-95"
           >
             Set income
           </button>

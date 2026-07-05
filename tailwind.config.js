@@ -6,8 +6,8 @@ export default {
       // Design tokens mirrored from src/styles/tokens.css so Tailwind utilities
       // (bg-bg, text-ink, border-line, text-accent ...) map to the same palette.
       colors: {
-        bg: '#F7F6FD',
-        surface: '#FFFFFF',
+        bg: '#F1EDFB',
+        surface: '#FDF9EE',
         ink: '#2D2A3E',
         muted: '#6E6A85',
         faint: '#9A96B0',

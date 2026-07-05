@@ -128,7 +128,7 @@ export function Categories({ categories, onBack }: CategoriesProps) {
             <button
               type="button"
               onClick={handleAdd}
-              className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white active:scale-95"
+              className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-surface active:scale-95"
             >
               Add
             </button>

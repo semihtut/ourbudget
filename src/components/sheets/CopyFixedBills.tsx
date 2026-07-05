@@ -79,7 +79,7 @@ export function CopyFixedBills({ month, categoryMap, onClose }: CopyFixedBillsPr
           type="button"
           onClick={handleCopy}
           disabled={busy || bills.length === 0}
-          className="mt-5 rounded-full bg-accent py-3.5 text-sm font-bold text-white shadow-card transition-transform hover:scale-[1.01] active:scale-[.98] disabled:opacity-60"
+          className="mt-5 rounded-full bg-accent py-3.5 text-sm font-bold text-surface shadow-card transition-transform hover:scale-[1.01] active:scale-[.98] disabled:opacity-60"
         >
           Copy {bills.length} {bills.length === 1 ? 'bill' : 'bills'}
         </button>

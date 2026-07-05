@@ -9,7 +9,7 @@ interface MonthSwitcherProps {
   size?: 'default' | 'compact';
 }
 
-// ‹ June 2026 › — drives the one global month. A friendly white pill.
+// ‹ June 2026 › — drives the one global month. A friendly cream pill.
 export function MonthSwitcher({ month, onChange, size = 'default' }: MonthSwitcherProps) {
   const btn = size === 'compact' ? 'h-7 w-7' : 'h-8 w-8';
   const labelCls =

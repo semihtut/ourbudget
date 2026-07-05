@@ -15,7 +15,7 @@ export default defineConfig({
         short_name: 'ourbudget',
         description: 'Track shared monthly expenses, offline.',
         theme_color: '#6C5CE7',
-        background_color: '#F7F6FD',
+        background_color: '#F1EDFB',
         display: 'standalone',
         start_url: '/',
         scope: '/',

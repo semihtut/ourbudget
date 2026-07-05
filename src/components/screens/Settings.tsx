@@ -125,7 +125,7 @@ export function Settings({
             <button
               type="button"
               onClick={promptInstall}
-              className="rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-white active:scale-95"
+              className="rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-surface active:scale-95"
             >
               Add
             </button>

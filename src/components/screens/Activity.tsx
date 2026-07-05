@@ -44,7 +44,7 @@ export function Activity({ rows, categoryMap, onEdit, onDelete }: ActivityProps)
   const chip = (active: boolean) =>
     `shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
       active
-        ? 'bg-accent text-white shadow-card'
+        ? 'bg-accent text-surface shadow-card'
         : 'bg-surface text-muted shadow-card hover:text-accent-deep'
     }`;
 

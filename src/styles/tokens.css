@@ -1,11 +1,11 @@
 /* Design tokens — "playful & friendly" (Fable edition).
-   Soft lavender paper, white pillowy cards, one cheerful violet accent, a
-   mint-green savings card, and a mascot. Rounded everything; shadows are soft
-   colored washes, never hard lines. Categorical palette validated (CVD +
-   contrast) against white cards. */
+   Soft lavender paper, cream pillowy cards (no pure white anywhere), one
+   cheerful violet accent, a mint-green savings card, and a mascot. Rounded
+   everything; shadows are soft colored washes, never hard lines. Categorical
+   palette validated (CVD + contrast) against the light cream cards. */
 :root {
-  --bg: #f7f6fd; /* lavender-white app background */
-  --surface: #ffffff; /* cards */
+  --bg: #f1edfb; /* lavender pastel app background */
+  --surface: #fdf9ee; /* cream cards — matches the mascot's paper */
   --ink: #2d2a3e; /* primary text */
   --muted: #6e6a85; /* secondary text */
   --faint: #9a96b0; /* tertiary / placeholders */
@@ -14,7 +14,7 @@
   --line-row: #f4f2fb; /* list-row dividers */
 
   --accent: #6c5ce7; /* violet — actions, active nav, current month */
-  --accent-deep: #5f4bdb; /* links / text on white */
+  --accent-deep: #5f4bdb; /* links / text on cards */
   --accent-soft: #edebff; /* pill badges, tints */
   --track: #eeecf9; /* progress-bar track */
 
@@ -35,14 +35,14 @@
    Validated: lightness band, chroma floor, adjacent-pair CVD, 3:1 contrast. */
 :root {
   --c0: #6c5ce7;
-  --c1: #0ca678;
+  --c1: #0b9e72;
   --c2: #e8590c;
   --c3: #1c7ed6;
   --c4: #d6336c;
   --c5: #5c940d;
   --c6: #7048e8;
   --c7: #d9480f;
-  --c8: #089fc8;
+  --c8: #0794ba;
   --c9: #9c36b5;
   --c10: #2f9e44;
   --c11: #e64980;

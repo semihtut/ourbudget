@@ -178,7 +178,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
                 <button
                   type="button"
                   onClick={handleAddCategory}
-                  className="ml-auto rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white active:scale-95"
+                  className="ml-auto rounded-lg bg-accent px-3 py-2 text-sm font-medium text-surface active:scale-95"
                 >
                   Add category
                 </button>
@@ -204,7 +204,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="e.g. Migros"
+              placeholder="e.g. weekly shop"
               className={`${fieldClass} mt-1.5`}
             />
           </label>
@@ -234,7 +234,7 @@ export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFor
         <button
           type="submit"
           disabled={saving}
-          className="mt-5 rounded-full bg-accent py-3.5 text-sm font-bold text-white shadow-card transition-transform hover:scale-[1.01] active:scale-95 disabled:opacity-60"
+          className="mt-5 rounded-full bg-accent py-3.5 text-sm font-bold text-surface shadow-card transition-transform hover:scale-[1.01] active:scale-95 disabled:opacity-60"
         >
           {existing ? 'Save changes' : 'Save expense'}
         </button>

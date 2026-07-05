@@ -36,7 +36,7 @@ export function Trends({ month, categoryMap }: TrendsProps) {
 
   const toggle = (active: boolean) =>
     `rounded-full px-4 py-1.5 text-sm font-bold transition-colors ${
-      active ? 'bg-accent text-white' : 'text-faint'
+      active ? 'bg-accent text-surface' : 'text-faint'
     }`;
 
   return (

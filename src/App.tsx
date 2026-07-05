@@ -129,7 +129,7 @@ export default function App() {
       <header className="sticky top-0 z-40 border-b border-line-soft bg-bg/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
           <h1 className="flex min-w-0 items-center gap-2 md:max-w-[220px] md:shrink-0">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-accent text-sm font-extrabold text-white">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-accent text-sm font-extrabold text-surface">
               €
             </span>
             <span className="max-w-[38vw] truncate text-lg font-extrabold text-ink md:max-w-none">
@@ -172,7 +172,7 @@ export default function App() {
             <button
               type="button"
               onClick={openAdd}
-              className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-4 py-2 text-sm font-bold text-white shadow-card transition-transform hover:scale-[1.03] active:scale-95 md:flex"
+              className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-4 py-2 text-sm font-bold text-surface shadow-card transition-transform hover:scale-[1.03] active:scale-95 md:flex"
             >
               <PlusIcon className="h-4 w-4" /> Add expense
             </button>
@@ -231,7 +231,7 @@ export default function App() {
           type="button"
           onClick={openAdd}
           aria-label="Add expense"
-          className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-accent text-white shadow-sheet transition-transform hover:scale-105 active:scale-95 md:hidden"
+          className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-accent text-surface shadow-sheet transition-transform hover:scale-105 active:scale-95 md:hidden"
         >
           <PlusIcon className="h-6 w-6" />
         </button>

@@ -58,7 +58,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
           type="button"
           onClick={handleStart}
           disabled={saving}
-          className="mt-5 w-full rounded-full bg-accent py-3.5 text-sm font-bold text-white shadow-card transition-transform hover:scale-[1.01] active:scale-[.98] disabled:opacity-60"
+          className="mt-5 w-full rounded-full bg-accent py-3.5 text-sm font-bold text-surface shadow-card transition-transform hover:scale-[1.01] active:scale-[.98] disabled:opacity-60"
         >
           Get started
         </button>
