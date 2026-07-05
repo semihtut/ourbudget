@@ -1,7 +1,17 @@
 import Dexie, { type Table } from 'dexie';
 
-import type { Category, Expense, Income, Settings } from '../types';
+import type { Category, Expense, Goal, Income, Settings } from '../types';
 import { PALETTE } from '../lib/palette';
+
+// The special category whose expenses count toward the yearly savings goal.
+export const SAVINGS_CATEGORY_ID = 'savings';
+
+const SAVINGS_CATEGORY: Omit<Category, 'color'> = {
+  id: SAVINGS_CATEGORY_ID,
+  label: 'Savings',
+  emoji: '🐷',
+  kind: 'fixed',
+};
 
 // Local-only IndexedDB store. No data ever leaves the device.
 class LedgerDB extends Dexie {
@@ -9,6 +19,7 @@ class LedgerDB extends Dexie {
   categories!: Table<Category, string>;
   settings!: Table<Settings, string>;
   incomes!: Table<Income, string>;
+  goals!: Table<Goal, string>;
 
   constructor() {
     super('ledger');
@@ -77,6 +88,34 @@ class LedgerDB extends Dexie {
         ),
       );
     });
+    // v6 — yearly savings goals + the special Savings category. Also remap
+    // colors again: two hues were darkened to keep 3:1 contrast on the new
+    // cream card surface.
+    this.version(6)
+      .stores({
+        expenses: '++id, month, categoryId, date',
+        categories: 'id',
+        settings: 'key',
+        incomes: 'month',
+        goals: 'year',
+      })
+      .upgrade(async (tx) => {
+        const categories = await tx.table('categories').toArray();
+        await Promise.all(
+          categories.map((category, index) =>
+            tx
+              .table('categories')
+              .update(category.id, { color: PALETTE[index % PALETTE.length] }),
+          ),
+        );
+        const hasSavings = categories.some((c) => c.id === SAVINGS_CATEGORY_ID);
+        if (!hasSavings) {
+          await tx.table('categories').add({
+            ...SAVINGS_CATEGORY,
+            color: PALETTE[categories.length % PALETTE.length],
+          });
+        }
+      });
   }
 }
 
@@ -106,6 +145,7 @@ const SEED_CATEGORIES: Omit<Category, 'color'>[] = [
   { id: 'entertainment', label: 'Entertainment', emoji: '🎬', kind: 'fixed' },
   { id: 'transportation', label: 'Transportation', emoji: '🚆', kind: 'variable' },
   { id: 'groceries', label: 'Groceries', emoji: '🛒', kind: 'variable' },
+  SAVINGS_CATEGORY,
 ];
 
 // Idempotent first-run seed: settings row + default categories.

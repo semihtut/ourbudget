@@ -31,6 +31,13 @@ export interface Income {
   amountCents: number;
 }
 
+// One savings target per calendar year. Money put into the special 'savings'
+// category counts toward it month by month, like any other expense entry.
+export interface Goal {
+  year: string; // 'YYYY', primary key
+  amountCents: number;
+}
+
 // Settings is a single row keyed by a fixed string in Dexie (store: 'key').
 export interface Settings {
   key: string; // always 'app'

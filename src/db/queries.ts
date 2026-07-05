@@ -1,7 +1,7 @@
 // Month-keyed read/write helpers + derived selectors. Components stay
 // presentational and call these; they never touch Dexie directly.
-import { db, SETTINGS_KEY } from './db';
-import type { Category, Expense, Income, MonthKey, Settings } from '../types';
+import { db, SAVINGS_CATEGORY_ID, SETTINGS_KEY } from './db';
+import type { Category, Expense, Goal, Income, MonthKey, Settings } from '../types';
 import { monthKeyOfDateString, moveDateToMonth, shiftMonth } from '../lib/month';
 import { nextPaletteColor } from '../lib/palette';
 
@@ -67,6 +67,34 @@ export const setIncome = async (
     return;
   }
   await db.incomes.put({ month, amountCents });
+};
+
+// ---- Savings goal ------------------------------------------------------------
+
+// Yearly savings target (cents) for a 'YYYY' year, or 0 when none is set.
+export const goalForYear = async (year: string): Promise<number> => {
+  const record = await db.goals.get(year);
+  return record?.amountCents ?? 0;
+};
+
+// Set (or clear) a year's savings goal. amountCents <= 0 removes the row.
+export const setGoal = async (year: string, amountCents: number): Promise<void> => {
+  if (amountCents <= 0) {
+    await db.goals.delete(year);
+    return;
+  }
+  await db.goals.put({ year, amountCents });
+};
+
+// Everything put into the Savings category during a 'YYYY' year, in cents.
+export const savingsForYear = async (year: string): Promise<number> => {
+  const rows = await db.expenses
+    .where('categoryId')
+    .equals(SAVINGS_CATEGORY_ID)
+    .toArray();
+  return rows
+    .filter((row) => row.month.startsWith(`${year}-`))
+    .reduce((acc, row) => acc + row.amountCents, 0);
 };
 
 // ---- Settings --------------------------------------------------------------
@@ -176,14 +204,15 @@ export const copyFixedBillsFromPreviousMonth = async (
 
 // Serialize all local data to a JSON string (for the Settings "Export data").
 export const exportAllData = async (): Promise<string> => {
-  const [expenses, categories, settings, incomes] = await Promise.all([
+  const [expenses, categories, settings, incomes, goals] = await Promise.all([
     db.expenses.toArray(),
     db.categories.toArray(),
     db.settings.get(SETTINGS_KEY),
     db.incomes.toArray(),
+    db.goals.toArray(),
   ]);
   return JSON.stringify(
-    { app: 'ourbudget', version: 1, expenses, categories, settings, incomes },
+    { app: 'ourbudget', version: 2, expenses, categories, settings, incomes, goals },
     null,
     2,
   );
@@ -198,6 +227,7 @@ export interface Backup {
   expenses: Expense[];
   categories: Category[];
   incomes: Income[];
+  goals: Goal[];
   settings?: Partial<Settings>;
 }
 
@@ -271,12 +301,23 @@ export const parseBackup = (json: string): Backup => {
     }
   }
 
+  const goals: Goal[] = [];
+  if (Array.isArray(data.goals)) {
+    for (const item of data.goals as unknown[]) {
+      const row = item as Record<string, unknown>;
+      if (typeof row.year !== 'string' || !/^\d{4}$/.test(row.year)) continue;
+      if (typeof row.amountCents !== 'number' || !Number.isFinite(row.amountCents)) continue;
+      if (row.amountCents <= 0) continue;
+      goals.push({ year: row.year, amountCents: Math.round(row.amountCents) });
+    }
+  }
+
   const settings =
     data.settings && typeof data.settings === 'object'
       ? (data.settings as Partial<Settings>)
       : undefined;
 
-  return { expenses, categories, incomes, settings };
+  return { expenses, categories, incomes, goals, settings };
 };
 
 // Duplicate detection key: two expenses are "the same" when date, category,
@@ -291,7 +332,10 @@ export const importBackup = async (
   backup: Backup,
   mode: ImportMode,
 ): Promise<ImportResult> =>
-  db.transaction('rw', db.expenses, db.categories, db.incomes, db.settings, async () => {
+  db.transaction(
+    'rw',
+    [db.expenses, db.categories, db.incomes, db.goals, db.settings],
+    async () => {
     const result: ImportResult = {
       expensesAdded: 0,
       duplicatesSkipped: 0,
@@ -300,7 +344,12 @@ export const importBackup = async (
     };
 
     if (mode === 'replace') {
-      await Promise.all([db.expenses.clear(), db.categories.clear(), db.incomes.clear()]);
+      await Promise.all([
+        db.expenses.clear(),
+        db.categories.clear(),
+        db.incomes.clear(),
+        db.goals.clear(),
+      ]);
     }
 
     // Categories first so every imported expense has a home.
@@ -338,6 +387,13 @@ export const importBackup = async (
       if (monthsWithIncome.has(income.month)) continue;
       await db.incomes.put(income);
       result.incomesAdded += 1;
+    }
+
+    // Savings goals merge like incomes: the device's own value wins.
+    const yearsWithGoal = new Set((await db.goals.toArray()).map((goal) => goal.year));
+    for (const goal of backup.goals) {
+      if (yearsWithGoal.has(goal.year)) continue;
+      await db.goals.put(goal);
     }
 
     // Replace restores household names too; merge never touches settings.

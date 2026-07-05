@@ -10,6 +10,8 @@ interface ExpenseFormProps {
   month: MonthKey;
   categories: Category[];
   existing?: Expense | null;
+  /** preselect a category when adding (e.g. "+ Add" on the savings card). */
+  initialCategoryId?: string;
   onClose: () => void;
 }
 
@@ -22,9 +24,15 @@ const fieldClass =
   'w-full rounded-xl border border-line bg-bg px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-accent placeholder:text-faint';
 
 // Add / edit / delete one expense. No "who paid" field. Money -> integer cents.
-export function ExpenseForm({ month, categories, existing, onClose }: ExpenseFormProps) {
+export function ExpenseForm({
+  month,
+  categories,
+  existing,
+  initialCategoryId,
+  onClose,
+}: ExpenseFormProps) {
   const [categoryId, setCategoryId] = useState<string>(
-    existing?.categoryId ?? categories[0]?.id ?? '',
+    existing?.categoryId ?? initialCategoryId ?? categories[0]?.id ?? '',
   );
   const [amount, setAmount] = useState<string>(
     existing ? centsToInput(existing.amountCents) : '',

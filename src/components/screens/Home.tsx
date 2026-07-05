@@ -3,10 +3,12 @@ import { MonthlyTrend } from '../charts/MonthlyTrend';
 import { IncomeSavings } from '../IncomeSavings';
 import { Mascot } from '../Mascot';
 import { PaceHint } from '../PaceHint';
+import { SavingsGoal } from '../SavingsGoal';
 import { TransactionRow } from '../TransactionList';
 import { formatEurWhole } from '../../lib/money';
 import { monthLabel, monthShortLabel, shiftMonth } from '../../lib/month';
 import { sumCents } from '../../db/queries';
+import { SAVINGS_CATEGORY_ID } from '../../db/db';
 import type { MonthTotal } from '../../db/queries';
 import type { Category, Expense, MonthKey } from '../../types';
 
@@ -19,6 +21,7 @@ interface HomeProps {
   onEdit: (expense: Expense) => void;
   onDelete: (expense: Expense) => void;
   onViewAll: () => void;
+  onAddSavings: () => void;
 }
 
 // "▼ €86 less than Jun" / "▲ €120 more than Jun" as a soft colored pill.
@@ -63,8 +66,10 @@ export function Home({
   onEdit,
   onDelete,
   onViewAll,
+  onAddSavings,
 }: HomeProps) {
   const total = sumCents(rows);
+  const monthSaved = sumCents(rows.filter((r) => r.categoryId === SAVINGS_CATEGORY_ID));
   const recent = [...rows]
     .sort((a, b) => (a.date !== b.date ? (a.date < b.date ? 1 : -1) : (b.id ?? 0) - (a.id ?? 0)))
     .slice(0, 3);
@@ -88,6 +93,13 @@ export function Home({
 
       {/* Left to spend */}
       <IncomeSavings month={month} spentCents={total} />
+
+      {/* Yearly savings goal */}
+      <SavingsGoal
+        month={month}
+        monthSavedCents={monthSaved}
+        onAddContribution={onAddSavings}
+      />
 
       {/* Where it went */}
       <section className="card p-5">

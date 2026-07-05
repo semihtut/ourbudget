@@ -20,6 +20,7 @@ import {
   TrendsIcon,
 } from './components/icons';
 import { useInstallPrompt } from './hooks/useInstallPrompt';
+import { SAVINGS_CATEGORY_ID } from './db/db';
 import {
   allCategories,
   deleteExpense,
@@ -46,6 +47,7 @@ export default function App() {
   const [showCategories, setShowCategories] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [presetCategoryId, setPresetCategoryId] = useState<string | undefined>(undefined);
   const [showCopyBills, setShowCopyBills] = useState(false);
 
   const { canInstall, promptInstall } = useInstallPrompt();
@@ -93,12 +95,14 @@ export default function App() {
   const prevTotalCents =
     series.length >= 2 ? series[series.length - 2]!.amountCents : null;
 
-  const openAdd = () => {
+  const openAdd = (categoryId?: string) => {
     setEditing(null);
+    setPresetCategoryId(categoryId);
     setShowForm(true);
   };
   const openEdit = (expense: Expense) => {
     setEditing(expense);
+    setPresetCategoryId(undefined);
     setShowForm(true);
   };
 
@@ -171,7 +175,7 @@ export default function App() {
             )}
             <button
               type="button"
-              onClick={openAdd}
+              onClick={() => openAdd()}
               className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-4 py-2 text-sm font-bold text-surface shadow-card transition-transform hover:scale-[1.03] active:scale-95 md:flex"
             >
               <PlusIcon className="h-4 w-4" /> Add expense
@@ -197,6 +201,7 @@ export default function App() {
             onEdit={openEdit}
             onDelete={handleDelete}
             onViewAll={() => setTab('activity')}
+            onAddSavings={() => openAdd(SAVINGS_CATEGORY_ID)}
           />
         )}
 
@@ -229,7 +234,7 @@ export default function App() {
       {showFab && (
         <button
           type="button"
-          onClick={openAdd}
+          onClick={() => openAdd()}
           aria-label="Add expense"
           className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-accent text-surface shadow-sheet transition-transform hover:scale-105 active:scale-95 md:hidden"
         >
@@ -244,6 +249,7 @@ export default function App() {
           month={month}
           categories={categories}
           existing={editing}
+          initialCategoryId={presetCategoryId}
           onClose={() => setShowForm(false)}
         />
       )}
